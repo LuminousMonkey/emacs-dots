@@ -1,0 +1,6 @@
+#+TITLE: TODO
+
+Stuff to be implemented, patches welcome.
+
+** TODO  Dynamic graphs that change as messages are sent on the channel.
+** TODO Detecting unaddressed conversation ([[http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation][Latent Dirichlet Allocation]])
