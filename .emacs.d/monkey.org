@@ -890,11 +890,7 @@ For Clojure practice.
 Quick function for connecting to a figwheel session.
 
 #+begin_src emacs-lisp
-  (defun figwheel-connect ()
-    (interactive)
-    (cider-connect "localhost" "7888")
-    (cider-interactive-eval
-     "(use 'figwheel-sidecar.repl-api)\n(cljs-repl)\n"))
+  (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
 #+end_src
 
 *** Ocaml
