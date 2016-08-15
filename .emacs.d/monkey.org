@@ -25,7 +25,6 @@ I need improve the ergonomics of my Emacs usage and keyboard. So, measure how I 
 
 #+begin_src emacs-lisp
   (use-package keyfreq
-    :load-path "site-lisp/keyfreq"
     :config
     (keyfreq-mode 1)
     (keyfreq-autosave-mode 1))
@@ -92,8 +91,7 @@ Font depends on the system we're using.
 
 Custom theme path, and load the theme.
 #+BEGIN_SRC emacs-lisp
-  (use-package color-theme
-    :load-path "site-lisp/color-theme")
+  (use-package color-theme)
 
   (add-to-list 'custom-theme-load-path
                (expand-file-name "themes" user-emacs-directory))
@@ -105,6 +103,7 @@ Spaceline, because try to make it look good so people ask what editor you use.
 
 #+begin_src emacs-lisp
   (use-package spaceline-config
+    :ensure f
     :load-path ("site-lisp/spaceline" "site-lisp/powerline")
     :config
     (progn
@@ -170,7 +169,6 @@ like it better.
   (use-package helm
     :demand t
     :diminish helm-mode
-    :load-path "site-lisp/helm"
     :bind (("C-c h" . helm-mini)
            ("C-h a" . helm-apropos)
            ("C-x C-b" . helm-buffers-list)
@@ -180,18 +178,18 @@ like it better.
            ("C-x C-m" . helm-M-x)
            ("C-x c o" . helm-occur)
            ("C-x c s" . helm-swoop)
-           ("C-x c SPC" . helm-all-mark-rings))
+           ("C-x c SPC" . helm-all-mark-rings)
+           ("C-x C-f" . helm-find-files))
     :init
     (require 'helm-config)
-      (helm-mode 1)
-      (ido-mode -1))
+    (helm-mode 1)
+    (ido-mode -1))
 #+END_SRC
 
 *** Helm Swoop - quickly finding lines
 
 #+begin_src emacs-lisp
   (use-package helm-swoop
-    :load-path "site-lisp/helm-swoop"
     :demand t
     :bind (("C-x c s" . helm-swoop)))
 #+end_src
@@ -200,7 +198,6 @@ Great for describing bindings. I'll replace the binding for =where-is= too.
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-descbinds
-    :load-path "site-lisp/helm-descbinds"
     :bind (("C-h b" . helm-descbinds)
            ("C-h w" . helm-descbinds))
     :config
@@ -208,8 +205,7 @@ Great for describing bindings. I'll replace the binding for =where-is= too.
 #+END_SRC
 
 #+begin_src emacs-lisp
-  (use-package helm-ag
-    :load-path "site-lisp/helm-ag")
+  (use-package helm-ag)
 #+end_src
 
 *** Mode line format
@@ -281,7 +277,6 @@ redo), and go down different branches.
 
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
-    :load-path "site-lisp/undo-tree"
     :diminish undo-tree-mode
     :config
     (progn
@@ -297,7 +292,6 @@ up help after a short delay.
 
 #+BEGIN_SRC emacs-lisp
   (use-package guide-key
-    :load-path "site-lisp/guide-key"
     :diminish guide-key-mode
     :config
     (progn
@@ -339,10 +333,9 @@ For navigating files in a project easily.
 
 #+begin_src emacs-lisp
   (use-package projectile
-    :load-path "site-lisp/projectile"
     :diminish projectile-mode
     :config
-    (require 'helm-projectile)
+    (use-package helm-projectile)
     (helm-projectile-on)
     (projectile-global-mode t))
 #+end_src
@@ -354,7 +347,6 @@ This promises to be a fast way to find things. Let's bind it to
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-swoop
-    :load-path "site-lisp/helm-swoop"
     :bind
     (("C-S-s" . helm-swoop)
      ("M-i" . helm-swoop)
@@ -382,7 +374,6 @@ For quickly navigating in the current buffers.
 
 #+BEGIN_SRC emacs-lisp
   (use-package ace-jump-mode
-    :load-path "site-lisp/ace-jump-mode"
     :config
     (setq ace-jump-mode-submode-list
           '(ace-jump-char-mode
@@ -396,7 +387,6 @@ For quickly jumping, moving and deleting windows.
 
 #+begin_src emacs-lisp
   (use-package ace-window
-    :load-path "site-lisp/ace-window"
     :config (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     :bind ("C-x o" . ace-window))
 #+end_src
@@ -434,7 +424,6 @@ MODIFICATION: Do not define the transposed key chord.
 
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord
-    :load-path "site-lisp"
     :config
     (progn
       (fset 'key-chord-define 'my/key-chord-define)
@@ -448,7 +437,7 @@ MODIFICATION: Do not define the transposed key chord.
 
       ;; not an ace-jump, but still useful
       (key-chord-define-global "jZ" 'ace-jump-zap-to-char)
-      (key-chord-define-global "FF" 'find-file)))
+      (key-chord-define-global "FF" 'helm-find-files)))
 #+END_SRC
 
 *** Move to beginning of line
@@ -487,8 +476,7 @@ point reaches the beginning or end of the buffer, stop there."
 clj-refactor needs Hydra, which I've been meaning to try.
 
 #+begin_src emacs-lisp
-  (use-package hyrda
-    :load-path "site-lisp/hydra")
+  (use-package hydra)
 #+end_src
 ** Writing
 *** Lines.
@@ -505,7 +493,6 @@ I have projects where I need to use markdown.
 
 #+begin_src emacs-lisp
   (use-package markdown-mode
-    :load-path "site-lisp/markdown-mode"
     :mode (("\\`README\\.md'" . gfm-mode)
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode)))
@@ -575,7 +562,6 @@ Make documentation available.
 
 #+begin_src emacs-lisp
   (use-package helm-dash
-    :load-path "site-lisp/helm-dash"
     :init
     (setq helm-dash-docsets-path "~/.docset")
     (setq helm-dash-browser-func 'eww)
@@ -641,7 +627,6 @@ selection. Handy for Emacs Lisp.
 
 #+begin_src emacs-lisp
   (use-package expand-region
-    :load-path "site-lisp/expand-region"
     :defer t
     :bind ("C-=" . er/expand-region))
 #+end_src
@@ -650,7 +635,6 @@ selection. Handy for Emacs Lisp.
 
 #+begin_src emacs-lisp
   (use-package company
-    :load-path "site-lisp/company-mode"
     :diminish company-mode
     :commands company-mode
     :init (add-hook 'prog-mode-hook 'company-mode)
@@ -680,7 +664,6 @@ Because I can't tell what a colour is by looking at the RGB values.
 
 #+begin_src emacs-lisp
   (use-package rainbow-mode
-    :load-path "site-lisp/rainbow-mode"
     :diminish rainbow-mode
     :config
     (add-hook 'text-mode-hook 'rainbow-mode))
@@ -692,11 +675,10 @@ When you get used to it you can't live without, especially lisp code.
 
 #+begin_src emacs-lisp
   (use-package smartparens
-    :load-path "site-lisp/smartparens"
     :diminish " ⚖"
     :config
     (progn
-      (use-package smartparens-config)
+      (use-package smartparens-config :ensure f)
       (setq sp-highlight-pair-overlay nil)
 
       (define-key sp-keymap (kbd "M-k") #'sp-raise-sexp)
@@ -752,7 +734,6 @@ I'm Australian mate, so we use the British dictionary.
 
 #+begin_src emacs-lisp
   (use-package ethan-wspace
-    :load-path "site-lisp/ethan-wspace/lisp"
     :diminish " ☐"
     :commands global-ethan-wspace-mode
     :init
@@ -792,7 +773,6 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
 
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :load-path "site-lisp/yasnippet"
     :diminish (yas-minor-mode . " Ⓨ")
     :commands (yas-global-mode yas-minor-mode)
     :config
@@ -803,14 +783,12 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
 *** Clojure
 #+begin_src emacs-lisp
     (use-package clojure-mode
-      :load-path "site-lisp/clojure-mode"
       :mode (("\\.clj\\'" . clojure-mode)
              ("\\.cljs\\'" . clojurescript-mode)
              ("\\.cljc$" . clojure-mode))
       :init
       (progn
         (use-package cider
-          :load-path "site-lisp/cider"
           :init
           (progn
             (add-hook 'cider-mode-hook 'eldoc-mode)
@@ -840,8 +818,6 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
         (add-hook 'clojure-mode-hook 'prettify-symbols-mode)
 
         (use-package clj-refactor
-          :load-path ("site-lisp/clj-refactor" "site-lisp/multiple-cursors"
-                      "site-lisp/edn")
           :config
           (clj-refactor-mode 1)
           (yas-minor-mode 1)
@@ -902,7 +878,6 @@ Error check anything I can.
 
 #+begin_src emacs-lisp
   (use-package flycheck
-    :load-path "site-lisp/flycheck"
     :commands flycheck-mode
     :diminish " Ⓕ"
     :defer t
@@ -982,20 +957,18 @@ Error check anything I can.
 A project I'm working on needs me to edit YAML.
 #+begin_src emacs-lisp
   (use-package yaml-mode
-    :load-path "site-lisp/yaml-mode"
     :mode (("\\.yaml\\'" . yaml-mode)))
 #+end_src
 
 *** LaTex/ConText
 #+begin_src emacs-lisp
-  (use-package tex-site)
+  (use-package tex-site :ensure f)
 #+end_src
 
 *** Git
 
 #+begin_src emacs-lisp
   (use-package magit
-    :load-path ("site-lisp/magit/lisp" "site-lisp/with-editor")
     :commands magit-get-top-dir
     :bind (("C-c g" . magit-status)
            ("C-c C-g l" . magit-file-log)
@@ -1007,8 +980,7 @@ A project I'm working on needs me to edit YAML.
 *** Mercurial
 
 #+begin_src emacs-lisp
-  (use-package monky
-    :load-path "site-lisp/monky")
+  (use-package monky)
 #+end_src
 
 ** Email
@@ -1025,6 +997,7 @@ Emacs can send mail without Gnus.
 
 #+begin_src emacs-lisp
   (use-package dot-gnus
+    :ensure f
     :load-path "override/gnus")
 
   (setq send-mail-function 'smtpmail-send-it)
@@ -1033,14 +1006,14 @@ Emacs can send mail without Gnus.
 OfflineIMAP
 
 #+begin_src emacs-lisp
-  (use-package offlineimap
-    :load-path "site-lisp/offlineimap")
+  (use-package offlineimap)
 #+end_src
 
 ** EMMS
 
 #+begin_src emacs-lisp
   (use-package emms-setup
+    :ensure f
     :load-path "site-lisp/emms/lisp"
     :defer t
     :config
@@ -1049,53 +1022,6 @@ OfflineIMAP
       (emms-default-players)))
 #+end_src
 
-** Internet Relay Chat
-
-IRC is a great way to hang out with other Emacs geeks.
-
-#+begin_src emacs-lisp
-  (use-package erc-social-graph
-    :load-path "site-lisp/erc-social-graph"
-    :defer t
-    :init
-    (progn
-      (setq erc-social-graph-dynamic-graph t)))
-
-  (use-package erc-highlight-nicknames)
-
-  (use-package erc
-    :defer t
-    :config
-    (progn
-      (load-file (expand-file-name ".erc-auth" user-emacs-directory))
-      (erc-services-mode 1)
-      (erc-track-mode t)
-      (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE")
-            erc-server-coding-system '(utf-8 . utf-8))
-      (setq erc-prompt-for-nickserv-password nil
-            erc-prompt-for-password nil
-            erc-nickserv-passwords
-            `((freenode (("LuminousMonkey" . ,freenode-nick-password)))
-              (comssa (("LuminousMonkey" . ,comssa-nick-password))))
-            erc-header-line-format "%t: %o"
-
-            erc-prompt (lambda ()
-                         (if erc-network
-                             (concat "[" (symbol-name erc-network) "]")
-                           (concat "[" (buffer-name) "]")))
-            erc-timestamp-format "[%H:%M] "
-            erc-fill-prefix "      + "
-            ;; erc-autojoin-channels-alist '(("freenode.net"
-            ;;                                "#org-mode"
-            ;;                                "#clojure"
-            ;;                                "#emacs"))
-            erc-server-history-list '("irc.freenode.net"
-                                      "irc.comssa.org.au")
-            erc-server "irc.freenode.net"
-            erc-nick "LuminousMonkey")
-      (add-to-list 'erc-modules 'highlight-nicknames)
-      (erc-update-modules)))
-#+end_src
 
 ** Twitter
 

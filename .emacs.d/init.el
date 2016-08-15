@@ -18,20 +18,30 @@
        (push (expand-file-name path user-emacs-directory) load-path))
    '("site-lisp" "site-lisp/use-package" "override" "lisp")))
 
+(package-initialize)
+
+(setq package-enable-at-startup nil)
+
+(unless (assoc-default "melpa" package-archives)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
 (eval-and-compile
-  (defvar use-package-verbose t)
+  (setq use-package-verbose t)
+  (setq use-package-always-ensure t)
   (require 'cl)
   (require 'use-package))
 
+(setq load-prefer-newer t)
+
 ;; These are needed by auto-compile and must be ahead of it.
-(use-package dash :defer t :load-path "lib/dash")
-(use-package packed :defer t :load-path "lib/packed")
+(use-package dash :defer t)
+(use-package packed :defer t)
 
 (use-package auto-compile
-  :load-path "lib/auto-compile"
   :config (auto-compile-on-load-mode))
-
-(setq load-prefer-newer t)
 
 (eval-and-compile
   (push (expand-file-name "lib" user-emacs-directory) load-path))
