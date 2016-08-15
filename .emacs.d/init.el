@@ -16,7 +16,7 @@
   (mapc
    #'(lambda (path)
        (push (expand-file-name path user-emacs-directory) load-path))
-   '("site-lisp" "site-lisp/use-package" "override" "lisp")))
+   '("site-lisp" "override" "lisp")))
 
 (package-initialize)
 
@@ -26,6 +26,7 @@
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
 
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (eval-and-compile
