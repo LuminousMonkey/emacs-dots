@@ -995,11 +995,13 @@ A project I'm working on needs me to edit YAML.
 
 #+begin_src emacs-lisp
   (use-package magit
-    :load-path "site-lisp/magit/lisp"
+    :load-path ("site-lisp/magit/lisp" "site-lisp/with-editor")
     :commands magit-get-top-dir
     :bind (("C-c g" . magit-status)
            ("C-c C-g l" . magit-file-log)
            ("C-c f" . magit-grep)))
+
+
 #+end_src
 
 *** Mercurial
