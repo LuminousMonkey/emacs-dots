@@ -1179,7 +1179,7 @@ update the link so it points to the archived e-mail.
     (interactive)
     (goto-char 1)
     (let ((search-invisible t))
-      (replace-string "INBOX" "archive")))
+      (replace-string "INBOX" "org-archive")))
 
   (add-hook 'org-capture-before-finalize-hook 'my/org-link-archved-mail)
 #+end_src
@@ -1345,6 +1345,12 @@ From http://stackoverflow.com/questions/6997387/how-to-archive-all-the-done-task
    "TODO=\"DONE\"|TODO=\"CANCELLED\"" (if (org-before-first-heading-p) 'file 'tree)))
 #+end_src
 
+*** Enable Org Lists and Tables to email
+    http://pragmaticemacs.com/emacs/use-org-mode-tables-and-structures-in-emails-and-elsewhere/
+#+begin_src emacs-lisp
+  (add-hook 'message-mode-hook 'turn-on-orgtbl)
+  (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+#+end_src
 ** Terminal
 Try to use Emacs for my terminal.
 
