@@ -51,7 +51,7 @@
 (use-package popwin :defer t :load-path "lib/popwin")
 (use-package s :defer t :load-path "lib/s")
 
-(use-package org :load-path "override/org-mode")
+(use-package org :ensure t)
 
 ;; Make adding hooks to modes a little nicer to specify.
 (defsubst hook-into-modes (func &rest modes)

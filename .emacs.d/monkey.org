@@ -1041,7 +1041,8 @@ I use Twitter as well.
 Start to use org-mode for everything I can.
 
 #+begin_src emacs-lisp
-    (use-package org)
+      (use-package org
+        :ensure t)
 #+end_src
 
 *** Use CSS for any HTML output
