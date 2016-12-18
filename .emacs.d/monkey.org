@@ -997,17 +997,22 @@ Sending out SMTP, use local Postfix service.
 Emacs can send mail without Gnus.
 
 #+begin_src emacs-lisp
-  (use-package dot-gnus
-    :ensure f
-    :load-path "override/gnus")
+    (use-package dot-gnus
+      :ensure f)
 
-  (setq send-mail-function 'smtpmail-send-it)
+    (setq send-mail-function 'smtpmail-send-it)
 #+end_src
 
 OfflineIMAP
 
 #+begin_src emacs-lisp
   (use-package offlineimap)
+#+end_src
+
+BBDB
+
+#+begin_src emacs-lisp
+  (use-package bbdb)
 #+end_src
 
 ** EMMS
@@ -1351,6 +1356,12 @@ From http://stackoverflow.com/questions/6997387/how-to-archive-all-the-done-task
 #+begin_src emacs-lisp
   (add-hook 'message-mode-hook 'turn-on-orgtbl)
   (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+#+end_src
+*** Templates
+**** Structure Templates
+#+begin_src emacs-lisp
+  (setq org-structure-template-alist
+        '(("l" "#+begin_src emacs-lisp\n?\n#+end_src" "<src lang=\"emacs-lisp\">\n?</src>")))
 #+end_src
 ** Terminal
 Try to use Emacs for my terminal.
