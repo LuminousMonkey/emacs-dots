@@ -9,6 +9,10 @@
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 
+;; I keep my configs using dotdotdot, and I use hardlinks.
+;; Make sure Emacs perserves hardlinks.
+(setq backup-by-copying-when-linked t)
+
 (setq ns-use-srgb-colorspace nil)
 
 ;; Use local packages.
