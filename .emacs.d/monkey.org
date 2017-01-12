@@ -1169,6 +1169,12 @@ Use =org-capture= templates to add tasks quickly.
     %?
   " "Basic task data")
 
+  (defun capture-report-date-file (path)
+    (let ((name (read-string "File Title: ")))
+      (expand-file-name (format "%s-%s.org"
+                                (format-time-string "%Y-%m-%d")
+                                name) path)))
+
   (setq org-capture-templates
         `(("t" "Tasks" entry
            (file+headline org-notes-file "Tasks")
@@ -1187,6 +1193,11 @@ Use =org-capture= templates to add tasks quickly.
            (file+datetree org-journal-file)
            "%K = %a\n%i\n%?\n"
            :unnarrowed t)
+          ("B" "Blog Entry" plain
+           (file (capture-report-date-file "~/Projects/monkey-blog/resources/posts/"))
+           "#+title: %^{Title}
+  ,#+date: %T\n%?"
+           )
           ("m" "TODO from Mail" entry
            (file+headline org-notes-file "Tasks")
            "* TODO %?, Link: %a")))
