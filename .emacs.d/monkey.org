@@ -1046,8 +1046,12 @@ I use Twitter as well.
 Start to use org-mode for everything I can.
 
 #+begin_src emacs-lisp
-      (use-package org
-        :ensure t)
+  (use-package org-plus-contrib)
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package org
+    :ensure t)
 #+end_src
 
 *** My files
@@ -1066,7 +1070,6 @@ Trying a new org-mode scheme for files.
   (setq org-modules '(org-bbdb
                       org-gnus
                       org-info
-                      org-jsinfo
                       org-habit
                       org-drill))
 
@@ -1196,7 +1199,7 @@ Use =org-capture= templates to add tasks quickly.
           ("B" "Blog Entry" plain
            (file (capture-report-date-file "~/Projects/monkey-blog/resources/posts/"))
            "#+title: %^{Title}
-  ,#+date: %T\n%?"
+  ,#+date: %T\n\n%?"
            )
           ("m" "TODO from Mail" entry
            (file+headline org-notes-file "Tasks")

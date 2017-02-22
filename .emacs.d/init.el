@@ -29,6 +29,8 @@
 (unless (assoc-default "melpa" package-archives)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
 
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
