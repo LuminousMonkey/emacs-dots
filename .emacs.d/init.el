@@ -9,6 +9,10 @@
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 
+;; I keep my configs using dotdotdot, and I use hardlinks.
+;; Make sure Emacs perserves hardlinks.
+(setq backup-by-copying-when-linked t)
+
 (setq ns-use-srgb-colorspace nil)
 
 ;; Use local packages.
@@ -24,6 +28,8 @@
 
 (unless (assoc-default "melpa" package-archives)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
+
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -51,7 +57,7 @@
 (use-package popwin :defer t :load-path "lib/popwin")
 (use-package s :defer t :load-path "lib/s")
 
-(use-package org :load-path "override/org-mode")
+(use-package org :ensure t)
 
 ;; Make adding hooks to modes a little nicer to specify.
 (defsubst hook-into-modes (func &rest modes)

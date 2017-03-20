@@ -96,11 +96,14 @@
                        ("nnmaildir+Work:All Mail" . "Work-Archive")
                        ("nnmaildir+Work:Backlog" . "Work-Backlog")
                        ("nnmaildir+Work:Sent Mail" . "Work-Sent")
+                       ("nnmaildir+Work:org-archive" . "Work-Org-Archive")
                        ("nnmaildir+Fastmail:INBOX" . "Monkey-Inbox")
                        ("nnmaildir+Uni:INBOX" . "Uni-Inbox")
                        ("nnmaildir+Uni-Staff:INBOX" . "Uni-Staff-Inbox")))
 
 (setq gnus-group-line-format "%ue%uM %S%p[%5t][%L]\t%P%5y:%B%(%uG%)%O\n")
+
+(setq gnus-permanently-visible-groups "^Work")
 
 (defun gnus-user-format-function-G (arg)
   (let ((mapped-name (assoc gnus-tmp-group group-name-map)))

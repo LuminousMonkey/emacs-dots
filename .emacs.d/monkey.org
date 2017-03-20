@@ -992,17 +992,22 @@ Sending out SMTP, use local Postfix service.
 Emacs can send mail without Gnus.
 
 #+begin_src emacs-lisp
-  (use-package dot-gnus
-    :ensure f
-    :load-path "override/gnus")
+    (use-package dot-gnus
+      :ensure f)
 
-  (setq send-mail-function 'smtpmail-send-it)
+    (setq send-mail-function 'smtpmail-send-it)
 #+end_src
 
 OfflineIMAP
 
 #+begin_src emacs-lisp
   (use-package offlineimap)
+#+end_src
+
+BBDB
+
+#+begin_src emacs-lisp
+  (use-package bbdb)
 #+end_src
 
 ** EMMS
@@ -1036,13 +1041,12 @@ I use Twitter as well.
 Start to use org-mode for everything I can.
 
 #+begin_src emacs-lisp
-    (use-package org)
+  (use-package org-plus-contrib)
 #+end_src
 
-*** Use CSS for any HTML output
-
 #+begin_src emacs-lisp
-  (setq org-export-htmlize-output-type 'css)
+  (use-package org
+    :ensure t)
 #+end_src
 
 *** My files
@@ -1053,6 +1057,26 @@ Trying a new org-mode scheme for files.
 | work.org      | Work related notes and TODOs |
 | people.org    | People-related tasks         |
 | archive.org   | Archive (duh)                |
+| projects.org  | Personal Project Tracking    |
+| personal.org  | Personal Development         |
+
+*** Modules
+#+begin_src emacs-lisp
+  (setq org-modules '(org-bbdb
+                      org-gnus
+                      org-info
+                      org-habit
+                      org-drill))
+
+  (eval-after-load 'org
+    '(org-load-modules-maybe t))
+#+end_src
+
+*** Use CSS for any HTML output
+
+#+begin_src emacs-lisp
+  (setq org-export-htmlize-output-type 'css)
+#+end_src
 
 *** Keyboard shortcuts
 
@@ -1103,6 +1127,9 @@ machines I use.
   (setq org-work-file (concat org-directory "/work.org"))
   (setq org-people-file (concat org-directory "/people.org"))
   (setq org-journal-file (concat org-directory "/journal.org"))
+  (setq org-projects-file (concat org-directory "/projects.org"))
+  (setq org-personal-file (concat org-directory "/personal.org"))
+  (setq org-woodworking-file (concat org-directory "/woodworking.org"))
 #+end_src
 
 *** Frequently accessed files
@@ -1140,6 +1167,12 @@ Use =org-capture= templates to add tasks quickly.
     %?
   " "Basic task data")
 
+  (defun capture-report-date-file (path)
+    (let ((name (read-string "File Title: ")))
+      (expand-file-name (format "%s-%s.org"
+                                (format-time-string "%Y-%m-%d")
+                                name) path)))
+
   (setq org-capture-templates
         `(("t" "Tasks" entry
            (file+headline org-notes-file "Tasks")
@@ -1158,6 +1191,11 @@ Use =org-capture= templates to add tasks quickly.
            (file+datetree org-journal-file)
            "%K = %a\n%i\n%?\n"
            :unnarrowed t)
+          ("B" "Blog Entry" plain
+           (file (capture-report-date-file "~/Projects/monkey-blog/resources/posts/"))
+           "#+title: %^{Title}
+  ,#+date: %T\n\n%?"
+           )
           ("m" "TODO from Mail" entry
            (file+headline org-notes-file "Tasks")
            "* TODO %?, Link: %a")))
@@ -1174,7 +1212,7 @@ update the link so it points to the archived e-mail.
     (interactive)
     (goto-char 1)
     (let ((search-invisible t))
-      (replace-string "INBOX" "archive")))
+      (replace-string "INBOX" "org-archive")))
 
   (add-hook 'org-capture-before-finalize-hook 'my/org-link-archved-mail)
 #+end_src
@@ -1209,6 +1247,12 @@ update the link so it points to the archived e-mail.
           (sequence "TODELEGATE(-)" "DELEGATED(d)" "|" "COMPLETE(x)")))
 #+end_src
 
+*** Habits
+    Starting to use org-habit.
+#+begin_src emacs-lisp
+  (setq org-habit-graph-column 60)
+  (setq org-habit-show-habits-only-for-today nil)
+#+end_src
 *** Org agenda
 **** Basic configuation
 
@@ -1219,7 +1263,10 @@ update the link so it points to the archived e-mail.
                       `(,org-notes-file
                         ,org-work-file
                         ,org-people-file
-                        ,org-journal-file))))
+                        ,org-journal-file
+                        ,org-projects-file
+                        ,org-personal-file
+                        ,org-woodworking-file))))
 #+end_src
 
 Look at two days at a time, see log entries, but not scheduled items that are
@@ -1340,6 +1387,18 @@ From http://stackoverflow.com/questions/6997387/how-to-archive-all-the-done-task
    "TODO=\"DONE\"|TODO=\"CANCELLED\"" (if (org-before-first-heading-p) 'file 'tree)))
 #+end_src
 
+*** Enable Org Lists and Tables to email
+    http://pragmaticemacs.com/emacs/use-org-mode-tables-and-structures-in-emails-and-elsewhere/
+#+begin_src emacs-lisp
+  (add-hook 'message-mode-hook 'turn-on-orgtbl)
+  (add-hook 'message-mode-hook 'turn-on-orgstruct++)
+#+end_src
+*** Templates
+**** Structure Templates
+#+begin_src emacs-lisp
+  (setq org-structure-template-alist
+        '(("l" "#+begin_src emacs-lisp\n?\n#+end_src" "<src lang=\"emacs-lisp\">\n?</src>")))
+#+end_src
 ** Terminal
 Try to use Emacs for my terminal.
 
