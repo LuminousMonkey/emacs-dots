@@ -68,13 +68,8 @@ Font depends on the system we're using.
         (progn
           (set-default-font "Inconsolata 18")
           ;; Fix Unicode
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "Inconsolata") nil)
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "DejaVu Sans") nil 'append)
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "Code2000") nil 'append)
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "Code2001") nil 'append)
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "Code2002") nil 'append)
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "Quivire") nil 'append)
-          (set-fontset-font "fontset-default" 'unicode (font-spec :name "Unifont") nil 'append)
+          (use-package unicode-fonts
+            :config (unicode-fonts-setup))
           ;; Also fix powerline
           (powerline-reset))))
 
