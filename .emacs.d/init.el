@@ -68,3 +68,17 @@
 ;; annoying.
 (setq vc-follow-symlinks t)
 (org-babel-load-file (expand-file-name "monkey.org" user-emacs-directory))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (org-plus-contrib bbdb yaml-mode use-package unicode-fonts undo-tree twittering-mode smartparens rainbow-mode offlineimap multi-term monky markdown-mode magit keyfreq key-chord htmlize helm-swoop helm-projectile helm-descbinds helm-dash helm-ag guide-key graphviz-dot-mode google-c-style flycheck f expand-region ethan-wspace company color-theme clj-refactor auto-compile ace-window ace-jump-mode 4clojure))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -66,10 +66,10 @@ Font depends on the system we're using.
   (defun setup-window-system (&rest frame)
     (if (window-system)
         (progn
+          ;; Fix Unicode
           (use-package unicode-fonts
             :config (unicode-fonts-setup))
           (set-default-font "Inconsolata 18")
-          ;; Fix Unicode
           ;; Also fix powerline
           (powerline-reset))))
 
