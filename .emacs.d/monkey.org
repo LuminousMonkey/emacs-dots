@@ -69,7 +69,7 @@ Font depends on the system we're using.
           ;; Fix Unicode
           (use-package unicode-fonts
             :config (unicode-fonts-setup))
-          (set-default-font "Inconsolata 18")
+          (set-default-font "Inconsolata Medium 18")
           ;; Also fix powerline
           (powerline-reset))))
 
