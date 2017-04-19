@@ -801,11 +801,9 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
 *** Clojure
 #+begin_src emacs-lisp
     (use-package clojure-mode
-      :mode (("\\.clj\\'" . clojure-mode)
-             ("\\.cljs\\'" . clojurescript-mode)
-             ("\\.cljc$" . clojure-mode))
       :init
       (progn
+        (use-package clojure-mode-extra-font-locking)
         (use-package cider
           :init
           (progn
@@ -819,7 +817,9 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
                 cider-prompt-save-file-on-load 'always-save
                 cider-font-lock-dynamically '(macro core function var)
                 nrepl-hide-special-buffers t
-                cider-overlays-use-font-lock t)
+                cider-overlays-use-font-lock t
+                clojure-align-forms-automatically t
+                clojure-use-backtracking-indent t)
           (cider-repl-toggle-pretty-printing))
 
         (setq clojure--prettify-symbols-alist
@@ -839,7 +839,12 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
           :config
           (clj-refactor-mode 1)
           (yas-minor-mode 1)
-          (cljr-add-keybindings-with-prefix "C-c C-m"))))
+          (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+        (use-package flycheck-clojure
+          :init
+          (progn
+            (eval-after-load 'flycheck '(flycheck-clojure-setup))))))
 #+end_src
 **** 4Clojure
 For Clojure practice.
@@ -968,7 +973,11 @@ Error check anything I can.
                                    :fringe-bitmap 'my-flycheck-fringe-indicator
                                    :fringe-face 'flycheck-fringe-info)
 
-      ))
+      (add-hook 'after-init-hook #'global-flycheck-mode)))
+
+  (use-package flycheck-pos-tip
+    :init (eval-after-load 'flycheck
+            '(setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 #+end_src
 
 *** YAML
