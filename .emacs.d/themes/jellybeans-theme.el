@@ -71,7 +71,9 @@
 
       (*scarlet-red-1*  "#ef2929")
       (*scarlet-red-2*  "#cc0000")
-      (*scarlet-red-3*  "#a40000"))
+      (*scarlet-red-3*  "#a40000")
+
+      (*ediff-color* "#353d66"))
 
   (let ((bg-back `(:background ,*background*))
         (bg-cursor `(:background ,*cursor*))
@@ -258,6 +260,16 @@
        `(font-latex-sectioning-2-face ,(color *orange-2*))
        `(font-latex-sectioning-3-face ,(color *orange-2*))
 
+       ;; EDiff
+       `(ediff-even-diff-A ,(color nil *ediff-color*))
+       `(ediff-even-diff-B ,(color nil *ediff-color*))
+       `(ediff-even-diff-C ,(color nil *ediff-color*))
+       `(ediff-even-diff-Ancestor ,(color nil *ediff-color*))
+       `(ediff-odd-diff-A ,(color nil *ediff-color*))
+       `(ediff-odd-diff-B ,(color nil *ediff-color*))
+       `(ediff-odd-diff-C ,(color nil *ediff-color*))
+       `(ediff-odd-diff-Ancestor ,(color nil *ediff-color*))
+
        ;; Rainbow delimiters
        `(rainbow-delimiters-depth-1-face ,(color *gradient-1*))
        `(rainbow-delimiters-depth-2-face ,(color *gradient-2*))
@@ -275,12 +287,12 @@
 
        ;; Multiterm
        `(term-color-blue ((t (:foreground "#268bd2"))))
-       `(term-color-cyan ((t (:foreground "#2aa198"))))
-       `(term-color-green ((t (:foreground "#859900"))))
-       `(term-color-magenta ((t (:foreground "#d33682"))))
-       `(term-color-red ((t (:foreground "#dc322f"))))
-       `(term-color-white ((t (:foreground "#eee8d5"))))
-       `(term-color-yellow ((t (:foreground "#b58900"))))
+       `(term-color-cyan ((t (:foreground "#66d9ef"))))
+       `(term-color-green ((t (:foreground "#a6e22e"))))
+       `(term-color-magenta ((t (:foreground "#f92672"))))
+       `(term-color-red ((t (:foreground "#ff669d"))))
+       `(term-color-white ((t (:foreground "#f8f8f2"))))
+       `(term-color-yellow ((t (:foreground "#e6db74"))))
 
        `(erc-header-line ((t (:inherit header-line))))
        `(erc-input-face ,(color *normal*))

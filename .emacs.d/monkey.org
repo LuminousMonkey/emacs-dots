@@ -1010,6 +1010,15 @@ A project I'm working on needs me to edit YAML.
   (use-package monky)
 #+end_src
 
+*** EDiff
+Configure ediff so it's sensible.
+
+#+begin_src emacs-lisp
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (setq ediff-diff-options "-w")
+#+end_src
+
 ** Email
 Gnus has it's own config (should it be moved here?)
 
