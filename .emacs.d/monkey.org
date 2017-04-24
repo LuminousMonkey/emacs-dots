@@ -1017,6 +1017,10 @@ Configure ediff so it's sensible.
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   (setq ediff-split-window-function 'split-window-horizontally)
   (setq ediff-diff-options "-w")
+
+  ;; Restore the window state properly after ediff quits.
+  (winner-mode)
+  (add-hook 'ediff-after-quit-hook-internal 'winner-undo)
 #+end_src
 
 ** Email
