@@ -798,18 +798,37 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
       (yas-global-mode 1)))
 #+end_src
 
+*** Aggressive Indentation
+Keep code indented correctly as much as we can.
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :diminish (aggressive-indent-mode . " ⇉")
+    :config
+    (add-hook 'clojure-mode-hook #'aggressive-indent-mode))
+#+end_src
+
+*** Rainbow Delimiters
+Just to keep things colourful.
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :config
+    (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
+#+end_src
+
 *** Clojure
 #+begin_src emacs-lisp
-    (use-package clojure-mode
-      :init
-      (progn
-        (use-package clojure-mode-extra-font-locking)
-        (use-package cider
-          :init
-          (progn
-            (add-hook 'cider-mode-hook 'eldoc-mode)
-            (add-hook 'cider-repl-mode-hook 'subword-mode))
-          :config
+  (use-package clojure-mode
+    :init
+    (progn
+      (use-package clojure-mode-extra-font-locking)
+      (use-package cider
+        :diminish " ç"
+        :init
+        (progn
+          (add-hook 'cider-mode-hook 'eldoc-mode)
+          (add-hook 'cider-repl-mode-hook 'subword-mode))
+        :config
+        (progn
           (setq nrepl-log-messages t
                 cider-popup-stacktraces-in-repl t
                 cider-repl-display-in-current-window t
@@ -818,33 +837,33 @@ From [[https://github.com/purcell/emacs.d/blob/master/lisp/init-editing-utils.el
                 cider-font-lock-dynamically '(macro core function var)
                 nrepl-hide-special-buffers t
                 cider-overlays-use-font-lock t
-                clojure-align-forms-automatically t
                 clojure-use-backtracking-indent t)
-          (cider-repl-toggle-pretty-printing))
+          (add-to-list 'same-window-buffer-names "*cider*"))
+        (cider-repl-toggle-pretty-printing))
 
-        (setq clojure--prettify-symbols-alist
-              '(("fn" . ?λ)
-                ("not=" . ?≠)
-                ("identical?" . ?≡)
-                ("<=" . ?≤)
-                (">=" . ?≥)
-                ("->" . (?- (Br . Bc) ?- (Br . Bc) ?>))
-                ("->>" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s
-                                 (Bl . Bl) ?- (Bc . Br) ?- (Bc . Bc) ?>
-                                 (Bc . Bl) ?- (Br . Br) ?>))))
+      (setq clojure--prettify-symbols-alist
+            '(("fn" . ?λ)
+              ("not=" . ?≠)
+              ("identical?" . ?≡)
+              ("<=" . ?≤)
+              (">=" . ?≥)
+              ("->" . (?- (Br . Bc) ?- (Br . Bc) ?>))
+              ("->>" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s
+                             (Bl . Bl) ?- (Bc . Br) ?- (Bc . Bc) ?>
+                             (Bc . Bl) ?- (Br . Br) ?>))))
 
-        (add-hook 'clojure-mode-hook 'prettify-symbols-mode)
+      (add-hook 'clojure-mode-hook 'prettify-symbols-mode)
 
-        (use-package clj-refactor
-          :config
-          (clj-refactor-mode 1)
-          (yas-minor-mode 1)
-          (cljr-add-keybindings-with-prefix "C-c C-m"))
+      (use-package clj-refactor
+        :config
+        (clj-refactor-mode 1)
+        (yas-minor-mode 1)
+        (cljr-add-keybindings-with-prefix "C-c M-r"))
 
-        (use-package flycheck-clojure
-          :init
-          (progn
-            (eval-after-load 'flycheck '(flycheck-clojure-setup))))))
+      (use-package flycheck-clojure
+        :init
+        (progn
+          (eval-after-load 'flycheck '(flycheck-clojure-setup))))))
 #+end_src
 **** 4Clojure
 For Clojure practice.

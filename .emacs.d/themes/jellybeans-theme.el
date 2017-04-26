@@ -181,6 +181,10 @@
        `(clojure-number ((t (:foreground "#FF73FD"))))
        `(clojure-regex ((t (,@fg-regex))))
 
+       `(cider-test-success-face ((t (:foreground "black" :background ,*chameleon-2*))))
+       `(cider-test-failure-face ((t (:foreground "white" :background ,*scarlet-red-3*))))
+       `(cider-test-error-face ((t (:foreground "black" :background ,*orange-2*))))
+
        ;; Monky mode
        `(monky-diff-add ((t (:foreground ,*chameleon-3*))))
 
