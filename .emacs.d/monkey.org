@@ -99,14 +99,15 @@ Spaceline, because try to make it look good so people ask what editor you use.
 
 #+begin_src emacs-lisp
   (use-package spaceline-config
-    :ensure f
-    :load-path ("site-lisp/spaceline" "site-lisp/powerline")
+    :ensure spaceline
+    :init
+    (progn
+      (setq powerline-default-separator 'wave)
+      (setq powerline-height 32))
     :config
     (progn
       (spaceline-emacs-theme)
-      (spaceline-helm-mode)
-      (setq powerline-default-separator 'wave)
-      (setq powerline-height 32)))
+      (spaceline-helm-mode)))
 #+end_src
 
 *** Backups
@@ -1085,7 +1086,6 @@ BBDB
       (emms-all)
       (emms-default-players)))
 #+end_src
-
 
 ** Twitter
 
