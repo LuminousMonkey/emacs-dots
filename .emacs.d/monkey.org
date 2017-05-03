@@ -2,7 +2,6 @@
 
 * Configuration
 ** About this file
-<<babel-init>>
 
 I was searching around the Internet one day, and I came across Sacha
 Chua's blog, [[http://sachachua.com/blog/][Living an awesome life]]. Boy did that open my eyes, so,
@@ -87,12 +86,11 @@ Font depends on the system we're using.
 
 Custom theme path, and load the theme.
 #+BEGIN_SRC emacs-lisp
-  (use-package color-theme)
-
-  (add-to-list 'custom-theme-load-path
-               (expand-file-name "themes" user-emacs-directory))
-
-  (load-theme 'jellybeans t)
+  (use-package color-theme
+    :config
+    (add-to-list 'custom-theme-load-path
+                 (expand-file-name "themes" user-emacs-directory))
+    (load-theme 'jellybeans t))
 #+END_SRC
 
 Spaceline, because try to make it look good so people ask what editor you use.
@@ -101,13 +99,11 @@ Spaceline, because try to make it look good so people ask what editor you use.
   (use-package spaceline-config
     :ensure spaceline
     :init
-    (progn
-      (setq powerline-default-separator 'wave)
-      (setq powerline-height 32))
+    (setq powerline-default-separator 'wave)
+    (setq powerline-height 32)
     :config
-    (progn
-      (spaceline-emacs-theme)
-      (spaceline-helm-mode)))
+    (spaceline-emacs-theme)
+    (spaceline-helm-mode))
 #+end_src
 
 *** Backups
@@ -164,7 +160,7 @@ like it better.
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm
-    :demand t
+    ;; :demand t
     :diminish helm-mode
     :bind (("C-c h" . helm-mini)
            ("C-h a" . helm-apropos)
@@ -174,63 +170,34 @@ like it better.
            ("M-x" . helm-M-x)
            ("C-x C-m" . helm-M-x)
            ("C-x c o" . helm-occur)
-           ("C-x c s" . helm-swoop)
+           ("C-c M-i" . helm-multi-swoop)
+           ("C-x M-i" . helm-multi-swoop-all)
            ("C-x c SPC" . helm-all-mark-rings)
            ("C-x C-f" . helm-find-files))
     :init
-    (require 'helm-config)
-    (helm-mode 1)
-    (ido-mode -1))
-#+END_SRC
-
-*** Helm Swoop - quickly finding lines
-
-#+begin_src emacs-lisp
-  (use-package helm-swoop
-    :demand t
-    :bind (("C-x c s" . helm-swoop)))
-#+end_src
-
-Great for describing bindings. I'll replace the binding for =where-is= too.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-descbinds
-    :bind (("C-h b" . helm-descbinds)
-           ("C-h w" . helm-descbinds))
+    (ido-mode -1)
     :config
-    (require 'helm-config))
-#+END_SRC
+    ;; For quickly finding lines.
+    (require 'helm-config)
+    (use-package helm-swoop
+      :bind
+      (("C-S-s" . helm-swoop)
+       ("C-x c s" . helm-swoop)
+       ("C-c M-i" . helm-multi-swoop)
+       ("C-x M-i" . helm-multi-swoop-all))
+      :config
+      (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+      (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop))
+    ;; Quickly find bindings.
+    (use-package helm-descbinds
+      :bind (("C-h b" . helm-descbinds)
+             ("C-h w" . helm-descbinds)))
+    (use-package helm-ag)
+    (use-package helm-flycheck)
 
-#+begin_src emacs-lisp
-  (use-package helm-ag)
-#+end_src
-
-*** Mode line format
-
-Display a more compact mode line.
-
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package smart-mode-line
-  ;;   :defer t
-  ;;   :init
-  ;;   (progn
-  ;;   (setq-default
-  ;;    mode-line-format
-  ;;    '("%e"
-  ;;      mode-line-front-space
-  ;;      mode-line-mule-info
-  ;;      mode-line-client
-  ;;      mode-line-modified
-  ;;      mode-line-remote
-  ;;      mode-line-frame-identification
-  ;;      mode-line-buffer-identification
-  ;;      "   "
-  ;;      mode-line-position
-  ;;      (vc-mode vc-mode)
-  ;;      "  "
-  ;;      mode-line-modes
-  ;;      mode-line-misc-info
-  ;;      mode-line-end-spaces))))
+    ;; I like to keep C-w for backward kill word.
+    (define-key helm-map (kbd "C-w") 'backward-kill-word)
+    (helm-mode t))
 #+END_SRC
 
 *** Show column number
@@ -336,27 +303,6 @@ For navigating files in a project easily.
     (helm-projectile-on)
     (projectile-global-mode t))
 #+end_src
-
-*** Helm-swoop - quickly finding lines
-
-This promises to be a fast way to find things. Let's bind it to
-=Ctrl-Shift-S= to see if I can get used to that...
-
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-swoop
-    :bind
-    (("C-S-s" . helm-swoop)
-     ("M-i" . helm-swoop)
-     ("M-s s" . helm-swoop)
-     ("M-s M-s" . helm-swoop)
-     ("M-I" . helm-swoop-back-to-last-point)
-     ("C-c M-i" . helm-multi-swoop)
-     ("C-x M-i" . helm-multi-swoop-all))
-    :config
-    (progn
-      (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-      (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)))
-#+END_SRC
 
 *** Regex search forward and backward
 
