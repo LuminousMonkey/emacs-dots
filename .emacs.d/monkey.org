@@ -631,7 +631,7 @@ Because I can't tell what a colour is by looking at the RGB values.
   (use-package rainbow-mode
     :diminish rainbow-mode
     :config
-    (add-hook 'text-mode-hook 'rainbow-mode))
+    (add-hook 'text-mode-hook #'rainbow-mode))
 #+end_src
 
 *** Smartparens
@@ -765,6 +765,7 @@ Just to keep things colourful.
 *** Clojure
 #+begin_src emacs-lisp
   (use-package clojure-mode
+    :mode (("\\.edn$" . clojure-mode))
     :init
     (progn
       (use-package clojure-mode-extra-font-locking)
@@ -779,12 +780,16 @@ Just to keep things colourful.
           (setq nrepl-log-messages t
                 cider-popup-stacktraces-in-repl t
                 cider-repl-display-in-current-window t
-                cider-repl-use-clojure-font-lock t
+                cider-repl-use-clojure-font-lock nil
                 cider-prompt-save-file-on-load 'always-save
                 cider-font-lock-dynamically '(macro core function var)
                 nrepl-hide-special-buffers t
                 cider-overlays-use-font-lock t
-                clojure-use-backtracking-indent t)
+                clojure-use-backtracking-indent t
+                cider-repl-history-file (expand-file-name "nrepl-history" user-emacs-directory)
+                cider-auto-select-error-buffer nil
+                cider-prompt-save-file-on-load nil
+                cider-repl-display-help-banner nil)
           (add-to-list 'same-window-buffer-names "*cider*"))
         (cider-repl-toggle-pretty-printing))
 
@@ -1402,12 +1407,14 @@ From http://stackoverflow.com/questions/6997387/how-to-archive-all-the-done-task
   (add-hook 'message-mode-hook 'turn-on-orgtbl)
   (add-hook 'message-mode-hook 'turn-on-orgstruct++)
 #+end_src
+
 *** Templates
 **** Structure Templates
 #+begin_src emacs-lisp
   (setq org-structure-template-alist
         '(("l" "#+begin_src emacs-lisp\n?\n#+end_src" "<src lang=\"emacs-lisp\">\n?</src>")))
 #+end_src
+
 ** Terminal
 Try to use Emacs for my terminal.
 
