@@ -870,14 +870,7 @@ Quick function for connecting to a figwheel session.
 
 *** Ocaml
 #+begin_src emacs-lisp
-  (use-package tuareg
-    :mode (("\\.ml[ily]?$" . tuareg-mode)
-           ("\\.topml$" . tuareg-mode))
-    :defer t
-    :init
-     ;; Make OCaml-generated files invisible to filename completion
-    (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
-      (add-to-list 'completion-ignored-extensions ext)))
+  (load "/home/aldredmr/.opam/4.05.0/share/emacs/site-lisp/tuareg-site-file")
 
   (use-package merlin
     :defer t
