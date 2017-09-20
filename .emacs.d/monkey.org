@@ -870,7 +870,24 @@ Quick function for connecting to a figwheel session.
 
 *** Ocaml
 #+begin_src emacs-lisp
-  (load "tuareg/tuareg-site-file")
+  (use-package tuareg
+    :mode (("\\.ml[ily]?$" . tuareg-mode)
+           ("\\.topml$" . tuareg-mode))
+    :defer t
+    :init
+     ;; Make OCaml-generated files invisible to filename completion
+    (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".cmxs" ".cmt" ".cmti" ".annot"))
+      (add-to-list 'completion-ignored-extensions ext)))
+
+  (use-package merlin
+    :defer t
+    :init
+    (add-hook 'tuareg-mode-hook 'merlin-mode))
+
+  (use-package ocp-indent
+    :defer t
+    :init
+    (add-hook 'tuareg-mode-hook 'ocp-indent-caml-mode-setup))
 
   (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
     (when (and opam-share (file-directory-p opam-share))
@@ -882,6 +899,14 @@ Quick function for connecting to a figwheel session.
       (add-hook 'caml-mode-hook 'merlin-mode t)
       ;; Use opam switch to lookup ocamlmerlin binary
       (setq merlin-command 'opam)))
+
+  (use-package utop
+    :defer t
+    :init
+    (progn
+      (add-hook 'tuareg-mode-hook 'utop-minor-mode))
+    :config
+    (setq utop-command "opam config exec -- utop -emacs"))
 
 #+end_src
 *** Flycheck
