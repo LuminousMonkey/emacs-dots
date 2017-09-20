@@ -19,16 +19,6 @@ the literate programming style.
 #+END_SRC
 
 ** General configuration
-*** Track frequency of keys
-I need improve the ergonomics of my Emacs usage and keyboard. So, measure how I use Emacs and look for improvements.
-
-#+begin_src emacs-lisp
-  (use-package keyfreq
-    :config
-    (keyfreq-mode 1)
-    (keyfreq-autosave-mode 1))
-#+end_src
-
 *** Normal bindings
 
 These are "normal" bindings, they don't rely on anything strange to be
@@ -259,7 +249,7 @@ up help after a short delay.
     :diminish guide-key-mode
     :config
     (progn
-      (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c" "C-c C-m"))
+      (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c" "C-c C-m" "C-h"))
       (guide-key-mode 1)))  ; Enable guide-key-mode
 #+END_SRC
 
@@ -881,6 +871,18 @@ Quick function for connecting to a figwheel session.
 *** Ocaml
 #+begin_src emacs-lisp
   (load "tuareg/tuareg-site-file")
+
+  (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
+    (when (and opam-share (file-directory-p opam-share))
+      ;; Register Merlin
+      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+      (autoload 'merlin-mode "merlin" nil t nil)
+      ;; Automatically start it in OCaml buffers
+      (add-hook 'tuareg-mode-hook 'merlin-mode t)
+      (add-hook 'caml-mode-hook 'merlin-mode t)
+      ;; Use opam switch to lookup ocamlmerlin binary
+      (setq merlin-command 'opam)))
+
 #+end_src
 *** Flycheck
 Error check anything I can.

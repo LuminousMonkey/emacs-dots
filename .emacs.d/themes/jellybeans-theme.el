@@ -307,13 +307,16 @@
        `(rainbow-delimiters-unmatched-face ,(color *black* *butter-3*))
 
        ;; Multiterm
-       `(term-color-blue ((t (:foreground "#268bd2"))))
-       `(term-color-cyan ((t (:foreground "#66d9ef"))))
-       `(term-color-green ((t (:foreground "#a6e22e"))))
-       `(term-color-magenta ((t (:foreground "#f92672"))))
-       `(term-color-red ((t (:foreground "#ff669d"))))
-       `(term-color-white ((t (:foreground "#f8f8f2"))))
-       `(term-color-yellow ((t (:foreground "#e6db74"))))
+       `(term-color-black ((t (:foreground "#000000"))))
+       `(term-color-blue ((t (:foreground "#9cd9f0"))))
+       `(term-color-cyan ((t (:foreground "#77dfd8"))))
+       `(term-color-green ((t (:foreground "#8eb33b"))))
+       `(term-color-magenta ((t (:foreground "#c8a0d1"))))
+       `(term-color-red ((t (:foreground "#c75646"))))
+       `(term-color-white ((t (:foreground "#f7f7f7"))))
+       `(term-color-yellow ((t (:foreground "#ffe377"))))
+       `(term-default-fg-color ((t (:foreground "#b0b0b0"))))
+       `(term-default-bg-color ((t (:foreground "#1b1d1e"))))
 
        `(erc-header-line ((t (:inherit header-line))))
        `(erc-input-face ,(color *normal*))
