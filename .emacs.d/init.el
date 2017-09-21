@@ -50,6 +50,8 @@
 (use-package auto-compile
   :config (auto-compile-on-load-mode))
 
+(use-package exec-path-from-shell)
+
 (eval-and-compile
   (push (expand-file-name "lib" user-emacs-directory) load-path))
 

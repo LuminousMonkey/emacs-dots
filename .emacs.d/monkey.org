@@ -270,16 +270,7 @@ Use Google Chrome for browsing.
         browse-url-generic-program "google-chrome-stable")
 #+end_src
 
-*** Exec Path
-I need to make sure my own local programs get in the path. Under OSX it seems
-the path isn't read correctly.
 
-#+begin_src emacs-lisp
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-      (setenv "PATH" path-from-shell)
-      (setq exec-path (split-string path-from-shell path-separator)))
-
-#+end_src
 
 ** Navigation
 *** Projectile
