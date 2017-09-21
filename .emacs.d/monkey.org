@@ -861,9 +861,11 @@ Quick function for connecting to a figwheel session.
 
 *** Ocaml
 #+begin_src emacs-lisp
-  (use-package tuareg)
+  (use-package tuareg
+    :load-path "site-lisp/ocaml/")
 
   (use-package merlin
+    :load-path "site-lisp/ocaml/"
     :defer t
     :init
     (add-hook 'tuareg-mode-hook 'merlin-mode)
@@ -871,12 +873,14 @@ Quick function for connecting to a figwheel session.
     (setq merlin-command 'opam))
 
   (use-package ocp-indent
+    :load-path "site-lisp/ocaml/"
     :defer t
     :init
     (add-hook 'tuareg-mode-hook 'ocp-indent-caml-mode-setup))
 
   (use-package utop
-    :diminish " µ🔝"
+    :load-path "site-lisp/ocaml/"
+    :diminish (utop-minor-mode . " µ🔝")
     :defer t
     :init
     (progn
