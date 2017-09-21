@@ -870,30 +870,22 @@ Quick function for connecting to a figwheel session.
 
 *** Ocaml
 #+begin_src emacs-lisp
-  (load "/home/aldredmr/.opam/4.05.0/share/emacs/site-lisp/tuareg-site-file")
+  (use-package tuareg)
 
   (use-package merlin
     :defer t
     :init
-    (add-hook 'tuareg-mode-hook 'merlin-mode))
+    (add-hook 'tuareg-mode-hook 'merlin-mode)
+    :config
+    (setq merlin-command 'opam))
 
   (use-package ocp-indent
     :defer t
     :init
     (add-hook 'tuareg-mode-hook 'ocp-indent-caml-mode-setup))
 
-  (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
-    (when (and opam-share (file-directory-p opam-share))
-      ;; Register Merlin
-      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
-      (autoload 'merlin-mode "merlin" nil t nil)
-      ;; Automatically start it in OCaml buffers
-      (add-hook 'tuareg-mode-hook 'merlin-mode t)
-      (add-hook 'caml-mode-hook 'merlin-mode t)
-      ;; Use opam switch to lookup ocamlmerlin binary
-      (setq merlin-command 'opam)))
-
   (use-package utop
+    :diminish " µ🔝"
     :defer t
     :init
     (progn
