@@ -19,16 +19,6 @@ the literate programming style.
 #+END_SRC
 
 ** General configuration
-*** Track frequency of keys
-I need improve the ergonomics of my Emacs usage and keyboard. So, measure how I use Emacs and look for improvements.
-
-#+begin_src emacs-lisp
-  (use-package keyfreq
-    :config
-    (keyfreq-mode 1)
-    (keyfreq-autosave-mode 1))
-#+end_src
-
 *** Normal bindings
 
 These are "normal" bindings, they don't rely on anything strange to be
@@ -68,7 +58,7 @@ Font depends on the system we're using.
           ;; Fix Unicode
           (use-package unicode-fonts
             :config (unicode-fonts-setup))
-          (set-default-font "Inconsolata Medium 18")
+          (set-default-font "Monaco 15")
           ;; Also fix powerline
           (powerline-reset))))
 
@@ -260,7 +250,7 @@ up help after a short delay.
     :diminish guide-key-mode
     :config
     (progn
-      (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c" "C-c C-m"))
+      (setq guide-key/guide-key-sequence '("C-x r" "C-x 4" "C-c" "C-c C-m" "C-h"))
       (guide-key-mode 1)))  ; Enable guide-key-mode
 #+END_SRC
 
@@ -280,10 +270,6 @@ Use Google Chrome for browsing.
   (setq browse-url-browser-function 'browse-url-generic
         browse-url-generic-program "google-chrome-stable")
 #+end_src
-
-*** Exec Path
-I need to make sure my own local programs get in the path. Under OSX it seems
-the path isn't read correctly.
 
 #+begin_src emacs-lisp
   (if (not (eq system-type 'windows-nt))
@@ -579,15 +565,30 @@ I almost always want to go to the right indentation on the next line.
 Lining on params is not fun in Java.
 
 #+begin_src emacs-lisp
-  (use-package google-c-style
-    :defer t
+  (use-package clang-format
+    :ensure t
     :config
-    (add-hook 'c-mode-common-hook
-              (lambda()
-                (subword-mode)
-                (google-set-c-style)
-                (google-make-newline-indent)
-                (setq c-basic-offset 4))))
+    (progn
+      (setq clang-format-style "google")
+      (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
+      (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package google-c-style
+    :ensure t
+    :config
+    (progn
+      (add-hook 'c-mode-common-hook 'google-set-c-style)
+      (add-hook 'c-more-common-hook 'google-make-newline-indent)
+      (setq gdb-many-windows t)
+      (setq safe-local-variable-values
+            (append '((c-mode . ((indent-tabs-mode . nil)))
+                      (c++-mode . ((indent-tabs-mode . nil)))
+                      (nil . ((flycheck-clang-language-standard . "c++11")
+                              (flycheck-clang-include-path . ("."
+                                                              "src"))
+                              (eval . (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))))))))))
 #+end_src
 
 *** Expand region
@@ -792,7 +793,7 @@ Just to keep things colourful.
                 cider-overlays-use-font-lock t
                 clojure-use-backtracking-indent t
                 cider-repl-history-file (expand-file-name "nrepl-history" user-emacs-directory)
-                cider-auto-select-error-buffer nil
+                cider-auto-select-error-buffer t
                 cider-prompt-save-file-on-load nil
                 cider-repl-display-help-banner nil)
           (add-to-list 'same-window-buffer-names "*cider*"))
@@ -870,7 +871,33 @@ Quick function for connecting to a figwheel session.
 
 *** Ocaml
 #+begin_src emacs-lisp
-  (load "tuareg/tuareg-site-file")
+  (use-package tuareg
+    :load-path "site-lisp/ocaml/")
+
+  (use-package merlin
+    :load-path "site-lisp/ocaml/"
+    :defer t
+    :init
+    (add-hook 'tuareg-mode-hook 'merlin-mode)
+    :config
+    (setq merlin-command 'opam))
+
+  (use-package ocp-indent
+    :load-path "site-lisp/ocaml/"
+    :defer t
+    :init
+    (add-hook 'tuareg-mode-hook 'ocp-indent-caml-mode-setup))
+
+  (use-package utop
+    :load-path "site-lisp/ocaml/"
+    :diminish (utop-minor-mode . " µ🔝")
+    :defer t
+    :init
+    (progn
+      (add-hook 'tuareg-mode-hook 'utop-minor-mode))
+    :config
+    (setq utop-command "opam config exec -- utop -emacs"))
+
 #+end_src
 *** Flycheck
 Error check anything I can.
@@ -1018,41 +1045,17 @@ Emacs can send mail without Gnus.
     (setq send-mail-function 'smtpmail-send-it)
 #+end_src
 
-OfflineIMAP
+*** OfflineIMAP
 
 #+begin_src emacs-lisp
   (use-package offlineimap)
 #+end_src
 
-BBDB
+*** BBDB
 
 #+begin_src emacs-lisp
-  (use-package bbdb)
-#+end_src
-
-** EMMS
-
-#+begin_src emacs-lisp
-  (use-package emms-setup
-    :ensure f
-    :load-path "site-lisp/emms/lisp"
-    :defer t
-    :config
-    (progn
-      (emms-all)
-      (emms-default-players)))
-#+end_src
-
-** Twitter
-
-I use Twitter as well.
-
-#+begin_src emacs-lisp
-  (use-package twittering-mode
-    :defer t
-    :config
-    (setq twittering-icon-mode t
-          twittering-use-master-password t))
+  (use-package bbdb
+    :ensure t)
 #+end_src
 
 ** Org Mode
@@ -1149,6 +1152,20 @@ machines I use.
   (setq org-projects-file (concat org-directory "/projects.org"))
   (setq org-personal-file (concat org-directory "/personal.org"))
   (setq org-woodworking-file (concat org-directory "/woodworking.org"))
+#+end_src
+
+*** LaTeX equations in org-mode
+
+#+begin_src emacs-lisp
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+#+end_src
+
+*** LaTeX in Org mode
+
+#+begin_src emacs-lisp
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               (append org-babel-load-languages
+                                       '((latex . t))))
 #+end_src
 
 *** Frequently accessed files

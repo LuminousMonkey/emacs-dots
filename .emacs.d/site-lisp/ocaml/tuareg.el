@@ -1,4 +1,4 @@
-;;; tuareg.el --- OCaml mode for Emacs.  -*- coding: utf-8 -*-
+;; tuareg.el --- OCaml mode for Emacs.  -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1997-2006 Albert Cohen, all rights reserved.
 ;; Copyright (C) 2009-2010 Jane Street Holding, LLC.
@@ -11,7 +11,7 @@
 ;;      Sean McLaughlin <seanmcl@gmail.com>
 ;;      Stefan Monnier <monnier@iro.umontreal.ca>
 ;; Created: 8 Jan 1997
-;; Version: 2.0.9
+;; Version: 2.0.10
 ;; Package-Requires: ((caml "3.12.0.1"))
 ;; Keywords: ocaml languages
 ;; URL: https://github.com/ocaml/tuareg
@@ -700,8 +700,8 @@ Regexp match data 0 points to the chars."
   (let* ((id "\\<[A-Za-z_][A-Za-z0-9_']*\\>")
          (lid "\\<[a-z_][A-Za-z0-9_']*\\>")
          (uid "\\<[A-Z][A-Za-z0-9_']*\\>")
-         ;; Matches corresponding braces for 3 levels.
-         (balanced-braces ; needs a closing brace
+         ;; Matches braces balanced on max 3 levels.
+         (balanced-braces
           (let ((b "\\(?:[^()]\\|(")
                 (e ")\\)*"))
             (concat b b b "[^()]*" e e e)))
@@ -709,6 +709,11 @@ Regexp match data 0 points to the chars."
           (let ((b "\\(?:[^()\"]\\|(")
                 (e ")\\)*"))
             (concat b b b "[^()\"]*" e e e)))
+         (balanced-braces-no-end-colon ; non-empty
+          (let ((b "\\(?:[^()]\\|(")
+                (e ")\\)*"))
+            (concat "\\(?:[^():]\\|:+\\(?:[^:()]\\|(" b b "[^()]*" e e ")\\)"
+                    "\\|(" b b "[^()]*" e e e)))
          (tuple (concat "(" balanced-braces ")")); much more than tuple!
          (module-path (concat uid "\\(?:\\." uid "\\)*"))
          (typeconstr (concat "\\(?:" module-path "\\.\\)?" lid))
@@ -747,6 +752,12 @@ Regexp match data 0 points to the chars."
   (setq
    tuareg-font-lock-keywords
    `(("^#[0-9]+ *\\(?:\"[^\"]+\"\\)?" 0 tuareg-font-lock-line-number-face t)
+     ;; cppo
+     (,(concat "^ *#" (regexp-opt '("define" "undef" "if" "ifdef" "ifndef"
+				    "else" "elif" "endif" "include"
+				    "warning" "error" "ext" "endext")
+				  'words))
+      . font-lock-preprocessor-face)
      ("\\<\\(false\\|true\\)\\>" . font-lock-constant-face)
      ;; "type" to introduce a local abstract type considered a keyword
      (,(concat "( *\\(type\\) +\\(" lid "\\) *)")
@@ -809,7 +820,11 @@ Regexp match data 0 points to the chars."
       (1 tuareg-font-lock-governing-face)
       (2 tuareg-font-lock-module-face keep t))
      (,(regexp-opt '("failwith" "failwithf" "exit" "at_exit" "invalid_arg"
-                     "parser" "raise" "ref" "ignore") 'words)
+                     "parser" "raise" "ref" "ignore"
+		     "Match_failure" "Assert_failure" "Invalid_argument"
+		     "Failure" "Not_found" "Out_of_memory" "Stack_overflow"
+		     "Sys_error" "End_of_file" "Division_by_zero"
+		     "Sys_blocked_io" "Undefined_recursive_module") 'words)
       . font-lock-builtin-face)
      ;; module paths A.B.
      (,(concat module-path "\\.") . tuareg-font-lock-module-face)
@@ -824,7 +839,12 @@ Regexp match data 0 points to the chars."
           'words))
       . tuareg-font-lock-operator-face)
      ;;; (lid: t) and (lid :> t)
-     (,(concat "( *" balanced-braces " *:>?\\([ \n'_A-Za-z]"
+     ;;; If `t' is longer then one word, require a space before.  Not only
+     ;;; this is more readable but it also avoids that `~label:expr var`
+     ;;; is taken as a type annotation when surrounded by parentheses.
+     (,(concat "(" balanced-braces-no-end-colon ":>?\\(['_A-Za-z]+\\))")
+      1 font-lock-type-face keep)
+     (,(concat "(" balanced-braces-no-end-colon ":>? \\([ \n'_A-Za-z]"
                balanced-braces-no-string "\\))")
       1 font-lock-type-face keep)
      (,(concat "\\<external +\\(" lid "\\)")  1 font-lock-function-name-face)
@@ -2074,7 +2094,6 @@ Short cuts for interactions with the toplevel:
   (set (make-local-variable 'paragraph-start)
        (concat "^[ \t]*$\\|\\*)$\\|" page-delimiter))
   (set (make-local-variable 'paragraph-separate) paragraph-start)
-;  (set (make-local-variable 'require-final-newline) t)
   (set (make-local-variable 'comment-start) "(* ")
   (set (make-local-variable 'comment-end) " *)")
   (set (make-local-variable 'comment-start-skip) "(\\*+[ \t]*")
@@ -2363,19 +2382,17 @@ otherwise return non-nil."
         (concat tuareg-opam " config exec -- ocaml"))
 
   (defun tuareg-opam-config-env()
-    (let* ((get-env (concat tuareg-opam " config env"))
+    (let* ((get-env (concat tuareg-opam " config env --sexp"))
            (opam-env (shell-command-to-string get-env)))
-      (replace-regexp-in-string "; *export.*$" "" opam-env)))
+      (car (read-from-string opam-env))))
 
   ;; OPAM compilation — one must update to the current compiler
   ;; before launching the compilation.
   (defadvice compile (before tuareg-compile-opam activate)
       "Run opam to update environment variables."
-      (let* ((env (tuareg-opam-config-env)))
-	(set (make-local-variable 'compilation-environment)
-	     ;; Quotes MUST be removed.
-	     (split-string (replace-regexp-in-string "\"" "" env)
-                           "[\f\n\r]+" t))))
+      (set (make-local-variable 'compilation-environment)
+           (mapcar (lambda (b) (concat (car b) "=" (cadr b)))
+                   (tuareg-opam-config-env))))
 
   (defvar merlin-command)
   (defun merlin-command ()
