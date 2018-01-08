@@ -96,14 +96,15 @@ Custom theme path, and load the theme.
 Spaceline, because try to make it look good so people ask what editor you use.
 
 #+begin_src emacs-lisp
-  (use-package spaceline-config
-    :ensure spaceline
-    :init
-    (setq powerline-default-separator 'wave)
-    (setq powerline-height 32)
-    :config
-    (spaceline-emacs-theme)
-    (spaceline-helm-mode))
+    (use-package spaceline-config
+      :ensure spaceline
+      :init
+      (setq powerline-default-separator 'wave)
+      (setq powerline-height 32)
+      :config
+      (spaceline-emacs-theme)
+      (spaceline-helm-mode)
+      (setup-window-system))
 #+end_src
 
 *** Backups
@@ -285,10 +286,14 @@ I need to make sure my own local programs get in the path. Under OSX it seems
 the path isn't read correctly.
 
 #+begin_src emacs-lisp
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+  (if (not (eq system-type 'windows-nt))
+      (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
       (setenv "PATH" path-from-shell)
-      (setq exec-path (split-string path-from-shell path-separator)))
+      (setq exec-path (split-string path-from-shell path-separator))))
 
+  ;; Test and use the Cygwin Path if available.
+  (if (file-directory-p "c:/cygwin64/bin")
+      (add-to-list 'exec-path "c:/cygwin64/bin"))
 #+end_src
 
 ** Navigation
