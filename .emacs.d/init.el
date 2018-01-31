@@ -50,7 +50,13 @@
 (use-package auto-compile
   :config (auto-compile-on-load-mode))
 
+(use-package diminish)
+
 (use-package exec-path-from-shell)
+
+;; ASpell on Windows
+(if (eq system-type 'windows-nt)
+    (add-to-list 'exec-path "c:/Program Files (x86)/Aspell/bin/"))
 
 (eval-and-compile
   (push (expand-file-name "lib" user-emacs-directory) load-path))
@@ -59,7 +65,7 @@
 (use-package popwin :defer t :load-path "lib/popwin")
 (use-package s :defer t :load-path "lib/s")
 
-(use-package org :ensure t)
+(use-package org :ensure org-plus-contrib :defer 7)
 
 ;; Make adding hooks to modes a little nicer to specify.
 (defsubst hook-into-modes (func &rest modes)
