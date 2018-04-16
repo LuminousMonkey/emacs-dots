@@ -19,6 +19,13 @@ the literate programming style.
 #+END_SRC
 
 ** General configuration
+*** Default directory
+
+#+begin_src emacs-lisp
+  (if (eq system-type 'windows-nt)
+      (setq default-directory "~/../../"))
+#+end_src
+
 *** Normal bindings
 
 These are "normal" bindings, they don't rely on anything strange to be
@@ -66,7 +73,7 @@ Font depends on the system we're using.
 
   (defadvice server-create-window-system-frame
       (after set-window-system-frame-colours ())
-    "set custom frame colours when create the first frame on a display"
+    "Set custom frame colours when create the first frame on a display"
     (message "Running after frame-initialize")
     (setup-window-system))
 
@@ -151,8 +158,18 @@ like it better.
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm
-    ;; :demand t
     :diminish helm-mode
+    :init
+    (progn
+      (require 'helm-config)
+      (setq helm-candidate-number-limit 100)
+      (setq helm-idle-delay 0.0
+            helm-input-idle-delay 0.01
+            helm-yas-display-key-on-candidate t
+            helm-quick-upate t
+            helm-M-x-requires-pattern nil
+            helm-ff-skip-boring-files t)
+      (helm-mode))
     :bind (("C-c h" . helm-mini)
            ("C-h a" . helm-apropos)
            ("C-x C-b" . helm-buffers-list)
@@ -165,12 +182,9 @@ like it better.
            ("C-x M-i" . helm-multi-swoop-all)
            ("C-x c SPC" . helm-all-mark-rings)
            ("C-x C-f" . helm-find-files))
-    :init
-    (ido-mode -1)
-    :config
-    ;; For quickly finding lines.
-    (require 'helm-config)
-    (use-package helm-swoop
+    :init (ido-mode -1))
+
+  (use-package helm-swoop
       :bind
       (("C-S-s" . helm-swoop)
        ("C-x c s" . helm-swoop)
@@ -179,16 +193,16 @@ like it better.
       :config
       (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
       (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop))
-    ;; Quickly find bindings.
-    (use-package helm-descbinds
+
+  (use-package helm-descbinds
       :bind (("C-h b" . helm-descbinds)
              ("C-h w" . helm-descbinds)))
-    (use-package helm-ag)
-    (use-package helm-flycheck)
 
-    ;; I like to keep C-w for backward kill word.
-    (define-key helm-map (kbd "C-w") 'backward-kill-word)
-    (helm-mode t))
+  (use-package helm-ag)
+  (use-package helm-flycheck)
+
+  ;; I like to keep C-w for backward kill word.
+  (define-key helm-map (kbd "C-w") 'backward-kill-word)
 #+END_SRC
 
 *** Show column number
@@ -267,8 +281,11 @@ From http://www.wisdomandwonder.com/wordpress/wp-content/uploads/2014/03/C3F.htm
 Use Google Chrome for browsing.
 
 #+begin_src emacs-lisp
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "google-chrome-stable")
+  (if (eq system-type 'windows-nt)
+      (setq browse-url-browser-function 'browse-url-default-windows-browser)
+    (setq browse-url-browser-function 'browse-url-generic
+          browse-url-generic-program "google-chrome-stable"))
+
 #+end_src
 
 #+begin_src emacs-lisp
@@ -772,11 +789,13 @@ Just to keep things colourful.
 #+begin_src emacs-lisp
   (use-package clojure-mode
     :mode (("\\.edn$" . clojure-mode))
+    :defer t
     :init
     (progn
       (use-package clojure-mode-extra-font-locking)
       (use-package cider
         :diminish " ç"
+        :defer t
         :init
         (progn
           (add-hook 'cider-mode-hook 'eldoc-mode)
@@ -823,45 +842,6 @@ Just to keep things colourful.
         (progn
           (eval-after-load 'flycheck '(flycheck-clojure-setup))))))
 #+end_src
-**** 4Clojure
-For Clojure practice.
-
-#+begin_src emacs-lisp
-  (use-package 4clojure)
-
-  (defun endless/4clojure-check-and-proceed ()
-    "Check the answer and show the next question if it worked."
-    (interactive)
-    (unless
-        (save-excursion
-          ;; Find last sexp (the answer).
-          (goto-char (point-max))
-          (forward-sexp -1)
-          ;; Check the answer.
-          (cl-letf ((answer
-                     (buffer-substring (point) (point-max)))
-                    ;; Preserve buffer contents, in case you failed.
-                    ((buffer-string)))
-            (goto-char (point-min))
-            (while (search-forward "__" nil t)
-              (replace-match answer))
-            (string-match "failed." (4clojure-check-answers))))
-      (4clojure-next-question)))
-
-  (defadvice 4clojure/start-new-problem
-      (after endless/4clojure/start-new-problem-advice () activate)
-    ;; Prettify the 4clojure buffer.
-    (goto-char (point-min))
-    (forward-line 2)
-    (forward-char 3)
-    (fill-paragraph)
-    ;; Position point for the answer
-    (goto-char (point-max))
-    (insert "\n\n\n")
-    (forward-char -1)
-    ;; Define our key.
-    (local-set-key (kbd "M-j") #'endless/4clojure-check-and-proceed))
-#+end_src
 **** ClojureScript
 Quick function for connecting to a figwheel session.
 
@@ -872,7 +852,8 @@ Quick function for connecting to a figwheel session.
 *** Ocaml
 #+begin_src emacs-lisp
   (use-package tuareg
-    :load-path "site-lisp/ocaml/")
+    :load-path "site-lisp/ocaml/"
+    :defer t)
 
   (use-package merlin
     :load-path "site-lisp/ocaml/"
@@ -1007,12 +988,6 @@ A project I'm working on needs me to edit YAML.
 
 #+end_src
 
-*** Mercurial
-
-#+begin_src emacs-lisp
-  (use-package monky)
-#+end_src
-
 *** EDiff
 Configure ediff so it's sensible.
 
@@ -1025,39 +1000,6 @@ Configure ediff so it's sensible.
   (winner-mode)
   (add-hook 'ediff-after-quit-hook-internal 'winner-undo)
 #+end_src
-
-** Email
-Gnus has it's own config (should it be moved here?)
-
-Sending out SMTP, use local Postfix service.
-
-#+begin_src emacs-lisp
-  (setq smtpmail-smtp-server "localhost")
-  (setq smtpmail-smtp-service 25)
-#+end_src
-
-Emacs can send mail without Gnus.
-
-#+begin_src emacs-lisp
-    (use-package dot-gnus
-      :ensure f)
-
-    (setq send-mail-function 'smtpmail-send-it)
-#+end_src
-
-*** OfflineIMAP
-
-#+begin_src emacs-lisp
-  (use-package offlineimap)
-#+end_src
-
-*** BBDB
-
-#+begin_src emacs-lisp
-  (use-package bbdb
-    :ensure t)
-#+end_src
-
 
 *** My files
 
@@ -1073,7 +1015,6 @@ Trying a new org-mode scheme for files.
 *** Modules
 #+begin_src emacs-lisp
   (setq org-modules '(org-bbdb
-                      org-gnus
                       org-info
                       org-habit
                       org-drill))
@@ -1225,22 +1166,6 @@ Use =org-capture= templates to add tasks quickly.
           ("m" "TODO from Mail" entry
            (file+headline org-notes-file "Tasks")
            "* TODO %?, Link: %a")))
-#+end_src
-
-**** Gnus e-mail tasks
-When making a task based off an e-mail, I will archive the e-mail, be sure to
-update the link so it points to the archived e-mail.
-
-[[http://stackoverflow.com/questions/15736590/how-to-automatically-track-links-in-org-mode-to-gnus-messages][How to automatically track links in org mode]]
-
-#+begin_src emacs-lisp
-  (defun my/org-link-archved-mail ()
-    (interactive)
-    (goto-char 1)
-    (let ((search-invisible t))
-      (replace-string "INBOX" "org-archive")))
-
-  (add-hook 'org-capture-before-finalize-hook 'my/org-link-archved-mail)
 #+end_src
 
 **** Refiling
@@ -1442,5 +1367,6 @@ Try to use Emacs for my terminal.
 I use Grapviz sometimes.
 
 #+begin_src emacs-lisp
-  (use-package graphviz-dot-mode)
+  (use-package graphviz-dot-mode
+    :defer t)
 #+end_src

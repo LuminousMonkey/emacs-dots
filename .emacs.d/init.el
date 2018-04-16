@@ -36,10 +36,16 @@
   (package-install 'use-package))
 
 (eval-and-compile
+  (require 'cl)
   (setq use-package-verbose t)
   (setq use-package-always-ensure t)
-  (require 'cl)
   (require 'use-package))
+
+(use-package benchmark-init
+  :ensure t
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (setq load-prefer-newer t)
 
@@ -76,26 +82,3 @@
 ;; annoying.
 (setq vc-follow-symlinks t)
 (org-babel-load-file (expand-file-name "monkey.org" user-emacs-directory))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(safe-local-variable-values
-   (quote
-    ((eval add-to-list
-           (quote auto-mode-alist)
-           (quote
-            ("\\.h\\'" . c++-mode)))
-     (c-mode
-      (indent-tabs-mode))
-     (c++-mode
-      (indent-tabs-mode))
-     (nil
-      (flycheck-clang-language-standard . "c++11")
-      (flycheck-clang-include-path "." "src")
-      (eval add-to-list
-            (quote auto-mode-alist)
-            (quote
-             ("\\.h\\'" . c++-mode))))))))
