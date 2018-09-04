@@ -574,7 +574,12 @@ I almost always want to go to the right indentation on the next line.
 
 #+begin_src emacs-lisp
   (setq c-default-style "linux"
-        c-basic-offset 4)
+        c-basic-offset 2)
+#+end_src
+
+*** CMake
+#+begin_src emacs-lisp
+  (use-package cmake-mode)
 #+end_src
 
 *** Fix Java indenting
@@ -592,20 +597,25 @@ Lining on params is not fun in Java.
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package google-c-style
-    :ensure t
-    :config
-    (progn
-      (add-hook 'c-mode-common-hook 'google-set-c-style)
-      (add-hook 'c-more-common-hook 'google-make-newline-indent)
-      (setq gdb-many-windows t)
-      (setq safe-local-variable-values
-            (append '((c-mode . ((indent-tabs-mode . nil)))
-                      (c++-mode . ((indent-tabs-mode . nil)))
-                      (nil . ((flycheck-clang-language-standard . "c++11")
-                              (flycheck-clang-include-path . ("."
-                                                              "src"))
-                              (eval . (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))))))))))
+  (with-eval-after-load 'cc-mode
+    (fset 'c-indent-region 'clang-format-region)
+    (bind-keys :map c-mode-base-map
+               ("<C-tab>" . company-complete)
+               ("M-." . my-goto-symbol)
+               ("M-," . xref-pop-marker-stack)
+               ("C-M-\\" . clang-format-region)
+               ("C-i" . clang-format)
+               ("C-." . my-imenu)
+               ("M-o" . cff-find-other-file))
+
+    (setq gdb-many-windows t)
+    (setq safe-local-variable-values
+          (append '((c-mode . ((indent-tabs-mode . nil)))
+                    (c++-mode . ((indent-tabs-mode . nil)))
+                    (nil . ((flycheck-clang-language-standard . "c++11")
+                            (flycheck-clang-include-path . ("."
+                                                            "src"))
+                            (eval . (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode)))))))))
 #+end_src
 
 *** Expand region
@@ -792,10 +802,13 @@ Just to keep things colourful.
     :defer t
     :init
     (progn
+      (use-package clojure-snippets)
       (use-package clojure-mode-extra-font-locking)
       (use-package cider
         :diminish " ç"
         :defer t
+        :ensure t
+        :pin melpa-stable
         :init
         (progn
           (add-hook 'cider-mode-hook 'eldoc-mode)
