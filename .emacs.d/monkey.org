@@ -306,10 +306,14 @@ For navigating files in a project easily.
 #+begin_src emacs-lisp
   (use-package projectile
     :diminish projectile-mode
+    :init
+    (setq projectile-keymap-prefix (kbd "C-c p"))
     :config
+    (setq projectile-enable-caching t)
+    (setq projectile-indexing-method 'alien)
+    (projectile-global-mode)
     (use-package helm-projectile)
-    (helm-projectile-on)
-    (projectile-global-mode t))
+    (helm-projectile-on))
 #+end_src
 
 *** Regex search forward and backward
@@ -847,6 +851,11 @@ Quick function for connecting to a figwheel session.
 
 #+begin_src emacs-lisp
   (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
+#+end_src
+
+*** Powershell
+#+begin_src emacs-lisp
+  (use-package powershell)
 #+end_src
 
 *** Ocaml
