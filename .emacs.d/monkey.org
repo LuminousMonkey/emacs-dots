@@ -812,7 +812,6 @@ Just to keep things colourful.
         :diminish " ç"
         :defer t
         :ensure t
-        :pin melpa-stable
         :init
         (progn
           (add-hook 'cider-mode-hook 'eldoc-mode)
