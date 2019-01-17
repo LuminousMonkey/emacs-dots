@@ -1,4 +1,13 @@
+;;;; Package --- Emacs initialisation of LuminousMonkey
+;;; Commentary:
+;; Emacs initialisation starting point.
+
 ;; Note: Emacs can be slow to start unless the host has a FQDN.
+
+;; I've copied bits of this config from:
+;; https://github.com/mrvdb/emacs-config/
+
+;;; Code:
 
 ;; Remove all the GUI cruft. This is done as soon as possible to try
 ;; and reduce the time they're shown at all.
@@ -13,41 +22,26 @@
 ;; Make sure Emacs perserves hardlinks.
 (setq backup-by-copying-when-linked t)
 
-(setq ns-use-srgb-colorspace nil)
-
-;; Use local packages.
-(eval-and-compile
-  (mapc
-   #'(lambda (path)
-       (push (expand-file-name path user-emacs-directory) load-path))
-   '("site-lisp" "override" "lisp")))
-
 (package-initialize)
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/") t)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("gnu" . "http://elpa.gnu.org/packages/") t)
 
-(setq package-enable-at-startup nil)
-
-(unless (assoc-default "melpa" package-archives)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
-
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-
+;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-and-compile
-  (require 'cl)
-  (setq use-package-verbose t)
-  (setq use-package-always-ensure t)
-  (require 'use-package))
-
-(use-package benchmark-init
-  :ensure t
-  :config
-  ;; To disable collection of benchmark data after init is done.
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
-
-(setq load-prefer-newer t)
+  (package-refresh-contents) ;; Just to make sure (note that refresh
+                             ;; only runs if use-package is NOT
+                             ;; installed)
+  (package-install 'use-package)
+  (eval-when-compile
+    (setq use-package-verbose t)
+    (setq use-package-always-ensure t)
+    (require 'use-package)))
 
 ;; These are needed by auto-compile and must be ahead of it.
 (use-package dash :defer t)
@@ -56,6 +50,8 @@
 (use-package auto-compile
   :config (auto-compile-on-load-mode))
 
+(use-package org)
+
 (use-package diminish)
 
 (use-package exec-path-from-shell)
@@ -63,15 +59,6 @@
 ;; ASpell on Windows
 (if (eq system-type 'windows-nt)
     (add-to-list 'exec-path "c:/Program Files (x86)/Aspell/bin/"))
-
-(eval-and-compile
-  (push (expand-file-name "lib" user-emacs-directory) load-path))
-
-(use-package let-alist :defer t)
-(use-package popwin :defer t :load-path "lib/popwin")
-(use-package s :defer t :load-path "lib/s")
-
-(use-package org :ensure org-plus-contrib :defer 7)
 
 ;; Make adding hooks to modes a little nicer to specify.
 (defsubst hook-into-modes (func &rest modes)
