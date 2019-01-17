@@ -529,6 +529,12 @@ Yeah, I use these.
             TeX-run-TeX nil (context-mode) :help "Run ConTeXt")))))
 #+end_src
 
+*** Screen Writing (Youtube scripts)
+
+#+begin_src emacs-lisp
+  (use-package fountain-mode)
+#+end_src
+
 ** Coding
 *** Documentation
 Make documentation available.
@@ -808,7 +814,6 @@ Just to keep things colourful.
         :diminish " ç"
         :defer t
         :ensure t
-        :pin melpa-stable
         :init
         (progn
           (add-hook 'cider-mode-hook 'eldoc-mode)
@@ -1095,6 +1100,7 @@ machines I use.
   (setq org-journal-file (concat org-directory "/journal.org"))
   (setq org-projects-file (concat org-directory "/projects.org"))
   (setq org-personal-file (concat org-directory "/personal.org"))
+  (setq org-twitch-file (concat org-directory "/twitch.org"))
   (setq org-woodworking-file (concat org-directory "/woodworking.org"))
 #+end_src
 
@@ -1227,6 +1233,7 @@ Use =org-capture= templates to add tasks quickly.
                       `(,org-notes-file
                         ,org-work-file
                         ,org-people-file
+                        ,org-twitch-file
                         ,org-journal-file
                         ,org-projects-file
                         ,org-personal-file
