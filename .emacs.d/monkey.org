@@ -1197,7 +1197,6 @@ machines I use.
   (setq org-projects-file (concat org-directory "/projects.org"))
   (setq org-personal-file (concat org-directory "/personal.org"))
   (setq org-twitch-file (concat org-directory "/twitch.org"))
-  (setq org-woodworking-file (concat org-directory "/woodworking.org"))
 #+end_src
 
 *** LaTeX equations in org-mode
@@ -1332,8 +1331,7 @@ Use =org-capture= templates to add tasks quickly.
                         ,org-twitch-file
                         ,org-journal-file
                         ,org-projects-file
-                        ,org-personal-file
-                        ,org-woodworking-file))))
+                        ,org-personal-file))))
 #+end_src
 
 Look at two days at a time, see log entries, but not scheduled items that are
