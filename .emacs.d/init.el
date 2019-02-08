@@ -255,7 +255,6 @@ The return value is nil if no font was found, truthy otherwise."
   :init
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-
 (load-theme 'monokai 'no-confirm)
 
 ;; Be sure we have a fallback font for symbols. Also, could be running
@@ -294,3 +293,11 @@ The return value is nil if no font was found, truthy otherwise."
   (spaceline-emacs-theme)
   (spaceline-helm-mode)
   (setup-window-system))
+
+;; Start Org Mode
+(require 'org-mode-basic)
+(require 'org-mode-organisation)
+(require 'org-mode-templates)
+
+;; Programming config
+(require 'programming-flycheck)
