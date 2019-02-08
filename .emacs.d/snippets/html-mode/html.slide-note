@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: html.slide-note
-# key: note
-# --
-<aside class="notes">
-  $0
-</aside>

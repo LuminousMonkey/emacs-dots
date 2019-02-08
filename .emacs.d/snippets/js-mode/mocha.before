@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: mocha.before
-# key: before
-# --
-before(function() {$0});

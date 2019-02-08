@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: js.exportedfunction
-# key: xf
-# --
-var $1 = exports.$1 = function($2) {$0};

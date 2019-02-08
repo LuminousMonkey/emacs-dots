@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: js.function
-# key: fn
-# --
-function($1) {$0}
