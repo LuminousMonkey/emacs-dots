@@ -1,4 +1,3 @@
-
 ;;;; Package --- Emacs initialisation of LuminousMonkey
 ;;; Commentary:
 ;; Emacs initialisation starting point.
@@ -62,6 +61,9 @@
 ;; is much more clean and organized.
 (use-package no-littering
   :demand t)
+
+;; Keybindings done early here, just if something stuffs up.
+(require 'core-keybindings)
 
 ;;; Prevent Emacs-provided Org from being loaded
 
@@ -201,23 +203,7 @@ The return value is nil if no font was found, truthy otherwise."
 ;; Packages
 (use-package diminish)
 
-(use-package helm
-  :diminish helm-mode
-  :init
-  (progn
-    (require 'helm-config)
-    (setq helm-candidate-number-limit 100)
-    (setq helm-idle-delay 0.0
-	  helm-input-idle-delay 0.01
-	  helm-yas-display-key-on-candidate t
-	  helm-quick-update t
-	  helm-M-x-requires-pattern nil
-	  helm-ff-skip-boring-files t)
-    (helm-mode)
-    (ido-mode -1))
-  :bind (("M-x" . helm-M-x)
-	 ("C-x C-m" . helm-M-x)
-	 ("C-x C-f" . helm-find-files)))
+(require 'core-navigation)
 
 (use-package ethan-wspace
   :diminish " ☐"
@@ -305,3 +291,6 @@ The return value is nil if no font was found, truthy otherwise."
 
 ;; Spelling config
 (require 'core-spelling)
+
+;; Writing config
+(require 'core-fountain)
