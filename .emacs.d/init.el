@@ -12,6 +12,8 @@
 
 ;; (package-initialize)
 
+(setq require-final-newline nil)
+
 (load-file (concat (file-name-directory load-file-name)
 		   "core/core-load-paths.el"))
 
@@ -223,7 +225,6 @@ The return value is nil if no font was found, truthy otherwise."
   :init
   (progn
     (global-ethan-wspace-mode)
-    (setq require-final-newline nil)
     (setq mode-require-final-newline nil)))
 
 (use-package smartparens
@@ -301,3 +302,6 @@ The return value is nil if no font was found, truthy otherwise."
 
 ;; Programming config
 (require 'programming-flycheck)
+
+;; Spelling config
+(require 'core-spelling)
