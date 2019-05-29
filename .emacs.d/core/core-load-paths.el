@@ -12,6 +12,9 @@
 (defconst luminousmonkey-org-directory
   (expand-file-name (concat luminousmonkey-start-directory "org-mode/"))
   "LuminousMonkey org-mode config directory.")
+(defconst luminousmonkey-gnus
+  (expand-file-name (concat luminousmonkey-start-directory "override/gnus/lisp/"))
+  "Gnus directory.")
 
 (defconst user-home-directory
   (expand-file-name "~/")
@@ -22,6 +25,7 @@
         ,luminousmonkey-core-directory
 	,luminousmonkey-programming-directory
 	,luminousmonkey-org-directory
+	,luminousmonkey-gnus
         ))
 
 (provide 'core-load-paths)

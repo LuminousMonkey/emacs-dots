@@ -287,6 +287,7 @@ The return value is nil if no font was found, truthy otherwise."
 (require 'org-mode-templates)
 
 ;; Programming config
+(require 'programming-clojure)
 (require 'programming-flycheck)
 
 ;; Spelling config
@@ -294,3 +295,6 @@ The return value is nil if no font was found, truthy otherwise."
 
 ;; Writing config
 (require 'core-fountain)
+
+;; Email
+(require 'gnus-load)
