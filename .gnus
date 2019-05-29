@@ -13,12 +13,13 @@
                   (directory "~/.mail/mike-fastmail.com"))
         (nnmaildir "OldEmail"
                    (directory "~/.mail/mike-gmail.com"))
-        (nnmaildir "Work"
-                   (directory "~/.mail/mike-directcommunications.com.au"))
+        ;;(nnmaildir "Work"
+        ;;           (directory "~/.mail/mike-directcommunications.com.au"))
         (nnmaildir "Uni"
                    (directory "~/.mail/mike-student.curtin.edu.au"))
-        (nnmaildir "Uni-Staff"
-                   (directory "~/.mail/mike-staff.curtin.edu.au"))))
+        ;;(nnmaildir "Uni-Staff"
+        ;;           (directory "~/.mail/mike-staff.curtin.edu.au"))
+	))
 
 (setq gnus-parameters
       '(("^nnmaildir.*Work:.*"
@@ -93,7 +94,7 @@
 
 (setq group-name-map '(("nnmaildir+OldEmail:INBOX" . "Gmail-Inbox")
                        ("nnmaildir+Work:INBOX" . "Work-Inbox")
-                       ("nnmaildir+Work:All Mail" . "Work-Archive")
+                       ("nnmaildir+Work:Archive" . "Work-Archive")
                        ("nnmaildir+Work:Backlog" . "Work-Backlog")
                        ("nnmaildir+Work:Sent Mail" . "Work-Sent")
                        ("nnmaildir+Work:org-archive" . "Work-Org-Archive")
