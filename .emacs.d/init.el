@@ -288,6 +288,7 @@ The return value is nil if no font was found, truthy otherwise."
 
 ;; Programming config
 (require 'programming-flycheck)
+(require 'programming-ocaml)
 
 ;; Spelling config
 (require 'core-spelling)
