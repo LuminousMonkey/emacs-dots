@@ -13,8 +13,8 @@
                   (directory "~/.mail/mike-fastmail.com"))
         (nnmaildir "OldEmail"
                    (directory "~/.mail/mike-gmail.com"))
-        ;;(nnmaildir "Work"
-        ;;           (directory "~/.mail/mike-directcommunications.com.au"))
+        (nnmaildir "Work"
+                   (directory "~/.mail/mike-directcommunications.com.au"))
         (nnmaildir "Uni"
                    (directory "~/.mail/mike-student.curtin.edu.au"))
         ;;(nnmaildir "Uni-Staff"

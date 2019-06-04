@@ -299,3 +299,6 @@ The return value is nil if no font was found, truthy otherwise."
 
 ;; Email
 ;; (require 'gnus-load)
+
+;; Social
+(require 'social-twitter)
