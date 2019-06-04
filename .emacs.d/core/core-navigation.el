@@ -42,6 +42,12 @@
 	 ("C-x C-f" . helm-find-files))
   :chords (("FF" . helm-find-files)))
 
+;; Describe Bindings
+(use-package helm-descbinds
+  :defer t
+  :bind (("C-h b" . helm-descbinds)
+	 ("C-h w" . helm-descbinds)))
+
 ;; (use-package key-chord
 ;;   :config
 ;;   (progn
