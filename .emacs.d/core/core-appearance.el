@@ -96,4 +96,7 @@ The return value is nil if no font was found, truthy otherwise."
 	;; Also fix powerline
 	(powerline-reset))))
 
+;; Keep a clock in the modeline.
+(display-time-mode 1)
+
 (provide 'core-appearance)

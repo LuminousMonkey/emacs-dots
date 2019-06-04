@@ -11,6 +11,10 @@
 
 ;; (package-initialize)
 
+;; Personal Information
+(setq user-full-name "Mike Aldred"
+      user-mail-address "mike.aldred@luminousmonkey.org")
+
 (setq require-final-newline nil)
 
 (load-file (concat (file-name-directory load-file-name)
@@ -28,6 +32,27 @@
 ;; I keep my configs using dotdotdot, and I use hardlinks.
 ;; Make sure Emacs perserves hardlinks.
 (setq backup-by-copying-when-linked t)
+
+;; Change backup directory, etc.
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+(setq delete-old-versions -1)
+(setq version-control t)
+(setq vc-make-backup-files t)
+(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+
+;; History
+(setq savehist-file "~/.emacs.d/savehist")
+(savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring
+        search-ring
+        regexp-search-ring))
+
+;; Make it easier to answer questions.
+(fset 'yes-or-no-p 'y-or-n-p)
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -132,6 +157,14 @@
 (use-package diminish)
 
 (require 'core-navigation)
+
+;; Winner Mode
+;; Enable going back to previous Emacs layouts.
+(use-package winner
+  :defer t)
+
+;; Sentences end in a single space
+(setq sentence-end-double-space nil)
 
 (use-package ethan-wspace
   :diminish " ☐"

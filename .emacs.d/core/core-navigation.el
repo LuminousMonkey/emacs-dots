@@ -22,6 +22,7 @@
   :bind ("C-x o" . ace-window)
   :chords (("jw" . ace-window)))
 
+;; Helm updates how you can navigate for options in the minibuffer, etc.
 (use-package helm
   :diminish helm-mode
   :init
