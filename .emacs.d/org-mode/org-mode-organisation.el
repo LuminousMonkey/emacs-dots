@@ -6,6 +6,8 @@
     (setq org-directory "~/../../Dropbox/GTD")
   (setq org-directory "~/Dropbox/GTD"))
 
+(setq org-birthdays-file (concat org-directory "/birthdays.org"))
+
 (setq org-personal-file (concat org-directory "/personal.org"))
 (setq org-work-file (concat org-directory "/work.org"))
 
@@ -19,6 +21,7 @@
 		    `(,org-tasks-file
 		      ,org-journal-file
 		      ,org-personal-file
+		      ,org-birthdays-file
 		      ,org-work-file))))
 
 ;; Agenda settings, two days at a time, see log entries, but not

@@ -295,6 +295,9 @@ The return value is nil if no font was found, truthy otherwise."
 ;; Spelling config
 (require 'core-spelling)
 
+;; Autocomplete
+(require 'core-completion)
+
 ;; Writing config
 (require 'core-fountain)
 
