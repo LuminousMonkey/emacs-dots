@@ -289,6 +289,7 @@ The return value is nil if no font was found, truthy otherwise."
 ;; Programming config
 (require 'programming-clojure)
 (require 'programming-flycheck)
+(require 'programming-ocaml)
 (require 'programming-commonlisp)
 
 ;; Spelling config
