@@ -16,6 +16,7 @@
       user-mail-address "mike.aldred@luminousmonkey.org")
 
 (setq require-final-newline nil)
+(setq mode-require-final-newline nil)
 
 (load-file (concat (file-name-directory load-file-name)
 		   "core/core-load-paths.el"))
