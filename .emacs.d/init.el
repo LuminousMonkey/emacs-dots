@@ -134,6 +134,7 @@
                "HEAD")))))
 
 (provide 'org-version)
+(provide 'org-mode-holidays)
 
 ;; Our real configuration for Org comes much later. Doing this now
 ;; means that if any packages that are installed in the meantime
@@ -249,3 +250,4 @@
 
 ;; Social
 (require 'social-twitter)
+(require 'social-blog)
