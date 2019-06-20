@@ -15,15 +15,35 @@
 (setq user-full-name "Mike Aldred"
       user-mail-address "mike.aldred@luminousmonkey.org")
 
+; Make sure we always use UTF-8.
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+
 (setq require-final-newline nil)
 (setq mode-require-final-newline nil)
+
+;; Automatically save buffers before launching M-x compile and friends,
+;; instead of asking you if you want to save.
+(setq compilation-ask-about-save nil)
+
+;; Make the selection work like most people expect.
+(delete-selection-mode t)
+(transient-mark-mode t)
+
+;; Automatically update unmodified buffers whose files have changed.
+(global-auto-revert-mode 1)
+
+;; Make compilation buffers scroll to follow the output, but stop scrolling
+;; at the first error.
+(setq compilation-scroll-output 'first-error)
 
 (load-file (concat (file-name-directory load-file-name)
 		   "core/core-load-paths.el"))
 
 ;; Remove all the GUI cruft. This is done as soon as possible to try
 ;; and reduce the time they're shown at all.
-(dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
+(dolist (mode '(tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
 
 ;; No start up or scratch messages, I don't read them.
@@ -231,6 +251,8 @@
 (require 'org-mode-templates)
 
 ;; Programming config
+(require 'programming-git)
+(require 'programming-project)
 (require 'programming-clojure)
 (require 'programming-flycheck)
 (require 'programming-ocaml)

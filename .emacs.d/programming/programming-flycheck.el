@@ -82,5 +82,9 @@
   :init (eval-after-load 'flycheck
           '(setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
+(with-eval-after-load "helm"
+  (use-package helm-flycheck
+    :bind (("C-c ! !" . helm-flycheck))))
+
 (provide 'programming-flycheck)
 ;;; programming-flycheck.el ends here

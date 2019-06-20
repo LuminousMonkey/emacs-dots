@@ -2,14 +2,7 @@
 
 (use-package yasnippet
   :config
-  (setq
-   yas-verbosity 1
-   yas-wrap-around-region t)
-
-  (with-eval-after-load 'yasnippet
-    (setq yas-snippet-dirs '(yasnippet-snippets-dir)))
-
-  (yas-reload-all)
-  (yas-global-mode))
+  (yas-global-mode t)
+  :diminish yas-minor-mode)
 
 (use-package yasnippet-snippets)
