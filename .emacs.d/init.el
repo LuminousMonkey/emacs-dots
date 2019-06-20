@@ -257,6 +257,7 @@
 (require 'programming-flycheck)
 (require 'programming-ocaml)
 (require 'programming-commonlisp)
+(require 'programming-yasnippet)
 
 ;; Spelling config
 (require 'core-spelling)

@@ -2,7 +2,10 @@
 
 (use-package yasnippet
   :config
+  (use-package yasnippet-snippets)
+  ;; Adding yasnippet support to company
+  (add-to-list 'company-backends '(company-yasnippet))
   (yas-global-mode t)
   :diminish yas-minor-mode)
 
-(use-package yasnippet-snippets)
+(provide 'programming-yasnippet)
