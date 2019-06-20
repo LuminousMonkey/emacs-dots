@@ -188,6 +188,16 @@
 ;; Sentences end in a single space
 (setq sentence-end-double-space nil)
 
+;; Code Style
+;; Tab indentation is a disease; a cancer of this planet.
+(set-default 'indent-tabs-mode nil)
+
+;; Always newline-and-indent
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
+;; Default indentation
+(setq-default tab-width 4)
+
 (use-package ethan-wspace
   :diminish " ☐"
   :commands global-ethan-wspace-mode
