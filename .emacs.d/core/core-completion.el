@@ -2,7 +2,7 @@
 
 ;; Auto complete
 (use-package company
-  :defer 5
+  :init (global-company-mode)
   :diminish
   :commands (company-mode company-complete-common)
   :bind (("C-<tab>" . company-complete-common)
@@ -13,8 +13,6 @@
   ;; Nicer Keybindings
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous)
-  (define-key company-active-map (kbd "C-d") 'company-show-doc-buffer)
-
-  (global-company-mode 1))
+  (define-key company-active-map (kbd "C-d") 'company-show-doc-buffer))
 
 (provide 'core-completion)
