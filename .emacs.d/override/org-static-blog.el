@@ -401,6 +401,9 @@ posts as full text posts."
    "<link href=\"//fonts.googleapis.com/css?family=Della+Respira&display=fallback\" rel=\"stylesheet\" type=\"text/css\">\n"
    "<link href=\"//fonts.googleapis.com/css?family=UnifrakturMaguntia&subset=all&display=fallback\" rel=\"stylesheet\" type=\"text/css\">\n"
    "<link href='//fonts.googleapis.com/css?family=Arimo|EB+Garamond|PT+Sans+Caption&subset=latin,cyrillic&display=fallback' rel='stylesheet' type='text/css'>\n"
+   "<script type=\"text/javascript\" async
+  src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML\">
+</script>"
    "</head>\n"
    "<body>\n"
    "<header role=\"banner\">\n"
