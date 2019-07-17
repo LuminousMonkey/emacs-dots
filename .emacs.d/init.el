@@ -39,7 +39,7 @@
 (setq compilation-scroll-output 'first-error)
 
 (load-file (concat (file-name-directory load-file-name)
-		   "core/core-load-paths.el"))
+           "core/core-load-paths.el"))
 
 ;; Remove all the GUI cruft. This is done as soon as possible to try
 ;; and reduce the time they're shown at all.
@@ -164,7 +164,7 @@
 (straight-use-package 'org)
 
 (use-package el-patch
-	     :straight t)
+         :straight t)
 
 (require 'core-funcs)
 
@@ -323,3 +323,11 @@
 ;; Social
 (require 'social-twitter)
 (require 'social-blog)
+
+(use-package ess
+  :init (require 'ess-site)
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . nil)
+     (R . t))))
