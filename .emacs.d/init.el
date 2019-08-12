@@ -307,6 +307,7 @@
 (require 'programming-ocaml)
 (require 'programming-commonlisp)
 (require 'programming-yasnippet)
+(require 'programming-python)
 
 ;; Spelling config
 (require 'core-spelling)
