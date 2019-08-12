@@ -89,12 +89,12 @@ The return value is nil if no font was found, truthy otherwise."
       (progn
     (set-frame-size (selected-frame) 120 60)
         (luminousmonkey/set-default-font '("Fira Code Medium"
-                  :size 18
-                  :weight normal
-                  :width normal
-                  :powerline-scale 1.4))
-    ;; Also fix powerline
-    (powerline-reset))))
+                                           :size 18
+                                           :weight normal
+                                           :width normal
+                                           :powerline-scale 1.4))
+        ;; Also fix powerline
+        (powerline-reset))))
 
 ;; Keep a clock in the modeline.
 (display-time-mode 1)
