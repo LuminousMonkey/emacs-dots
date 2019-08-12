@@ -22,7 +22,34 @@
   (eval-after-load 'org-agenda
     '(bind-key "i" 'org-agenda-clock-in org-agenda-mode-map))
   :bind (("C-c r" . org-capture)
-	 ("C-c a" . org-agenda))
-  )
+         ("C-c a" . org-agenda)))
+
+(setq org-latex-pdf-process
+  '("xelatex -interaction nonstopmode %f"
+     "xelatex -interaction nonstopmode %f")) ;; for multiple passes
+
+(setq org-latex-with-hyperref nil)
+
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("luminousmonkey-org-article"
+                "\\documentclass[12pt,a4paper]{article}
+\\usepackage[T1]{fontenc}
+\\usepackage{fontspec}
+\\usepackage{graphicx}
+\\defaultfontfeatures{Mapping=tex-text}
+\\setromanfont{Equity Text B}
+\\usepackage{geometry}
+\\geometry{a4paper, textwidth=6.5in, textheight=10in,
+           marginparsep=7pt, marginparwidth=.6in}
+\\pagestyle{empty}
+\\title{}
+        [NO-DEFAULT-PACKAGES]
+        [NO-PACKAGES]"
+                ("\\section{%s}" . "\\section*{%s}")
+                ("\\subsection{%s}" . "\\subsection*{%s}")
+                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
 (provide 'org-mode-basic)

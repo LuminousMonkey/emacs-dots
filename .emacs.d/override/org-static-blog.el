@@ -404,6 +404,13 @@ posts as full text posts."
    "<script type=\"text/javascript\" async
   src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML\">
 </script>"
+   "<link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/favicon-32x32.png\">"
+   "<link rel=\"icon\" type=\"image/png\" sizes=\"96x96\" href=\"/favicon-96x96.png\">"
+   "<link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/favicon-16x16.png\">"
+   "<link rel=\"manifest\" href=\"/manifest.json\">"
+   "<meta name=\"msapplication-TileColor\" content=\"#ffffff\">"
+   "<meta name=\"msapplication-TileImage\" content=\"/ms-icon-144x144.png\">"
+   "<meta name=\"theme-color\" content=\"#ffffff\">"
    "</head>\n"
    "<body>\n"
    "<header role=\"banner\">\n"
