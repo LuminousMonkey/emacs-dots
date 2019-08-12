@@ -88,7 +88,7 @@ The return value is nil if no font was found, truthy otherwise."
   (if (window-system)
       (progn
     (set-frame-size (selected-frame) 120 60)
-        (luminousmonkey/set-default-font '("Fira Code"
+        (luminousmonkey/set-default-font '("Fira Code Medium"
                   :size 18
                   :weight normal
                   :width normal
