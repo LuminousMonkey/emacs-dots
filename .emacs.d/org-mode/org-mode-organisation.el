@@ -17,12 +17,12 @@
 ;; Org Agenda
 (setq org-agenda-files
       (delq nil
-	    (mapcar (lambda (x) (and (file-exists-p x) x))
-		    `(,org-tasks-file
-		      ,org-journal-file
-		      ,org-personal-file
-		      ,org-birthdays-file
-		      ,org-work-file))))
+        (mapcar (lambda (x) (and (file-exists-p x) x))
+            `(,org-tasks-file
+              ,org-journal-file
+              ,org-personal-file
+              ,org-birthdays-file
+              ,org-work-file))))
 
 ;; Agenda settings, two days at a time, see log entries, but not
 ;; scheduled items that are finished. Use a timegrid.
@@ -36,8 +36,8 @@
 (setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
 (setq org-agenda-time-grid
       '((daily today require-timed)
-        "----------------"
-        (800 1000 1200 1400 1600 1800)))
+        (800 1000 1200 1400 1600 1800)
+        "......" "----------------"))
 (setq org-columns-default-format "%50ITEM %12SCHEDULED %TODO %3PRIORITY %Effort{:} %TAGS")
 
 ;; Start weeks on a Saturday, since I'm done for work on the Friday.
