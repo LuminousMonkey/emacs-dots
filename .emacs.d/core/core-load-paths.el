@@ -26,10 +26,10 @@
 (mapc 'add-to-load-path
       `(
         ,luminousmonkey-core-directory
-	,luminousmonkey-programming-directory
-	,luminousmonkey-org-directory
-	,luminousmonkey-social-directory
-	,luminousmonkey-gnus
+        ,luminousmonkey-programming-directory
+        ,luminousmonkey-org-directory
+        ,luminousmonkey-social-directory
+        ,luminousmonkey-gnus
         ))
 
 (provide 'core-load-paths)

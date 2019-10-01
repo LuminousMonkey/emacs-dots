@@ -1,5 +1,5 @@
 (use-package kickasm-mode
-  :load-path "override"
+  :straight (kickasm-mode :type git :host github :repo "mweidhagen/kickasm-mode")
   :init
   (setq kickasm-mnemonic-indent 2)
   (setq kickasm-command-start-indent 2))
