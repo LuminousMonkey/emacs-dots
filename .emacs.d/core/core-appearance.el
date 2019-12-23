@@ -93,6 +93,8 @@ The return value is nil if no font was found, truthy otherwise."
                                            :weight normal
                                            :width normal
                                            :powerline-scale 1.4))
+        ;; Fix Cursor colour
+        (set-cursor-color "#ffac4a")
         ;; Also fix powerline
         (powerline-reset))))
 
