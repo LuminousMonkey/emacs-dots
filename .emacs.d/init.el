@@ -75,6 +75,9 @@
 ;; Make it easier to answer questions.
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; Fix MAC Alt handling
+(setq mac-option-modifier 'meta)
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
