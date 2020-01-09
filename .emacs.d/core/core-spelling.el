@@ -11,24 +11,24 @@
   :config
   (progn
     (setq ispell-program-name "aspell"
-	  ispell-dictionary "british"
-	  ispell-extra-args '("--sug-mode=ultra")
-	  ispell-silently-savep t)
+      ispell-dictionary "british"
+      ispell-extra-args '("--sug-mode=ultra")
+      ispell-silently-savep t)
     (add-hook 'ispell-initialize-spellchecker-hook
-	      (lambda ()
-		(setq ispell-base-dicts-override-alist
-		      '((nil ; default
-			 "[A-Za-z]" "[^A-Za-z]" "[']" t
-			 ("-d" "en_GB" "--encoding=utf-8") nil utf-8)
-			("australian"
-			 "[A-Za-z]" "[^A-Za-z]" "[']" t
-			 ("-d" "en_AU" "--encoding=utf-8") nil utf-8)
-			("american" ; Yankee English
-			 "[A-Za-z]" "[^A-Za-z]" "[']" t
-			 ("-d" "en_US" "--encoding=utf-8") nil utf-8)
-			("british" ; British English
-			 "[A-Za-z]" "[^A-Za-z]" "[']" t
-			 ("-d" "en_GB" "--encoding=utf-8") nil utf-8)))))
+          (lambda ()
+        (setq ispell-base-dicts-override-alist
+              '((nil ; default
+             "[A-Za-z]" "[^A-Za-z]" "[']" t
+             ("-d" "en_GB" "--encoding=utf-8") nil utf-8)
+            ("australian"
+             "[A-Za-z]" "[^A-Za-z]" "[']" t
+             ("-d" "en_AU" "--encoding=utf-8") nil utf-8)
+            ("american" ; Yankee English
+             "[A-Za-z]" "[^A-Za-z]" "[']" t
+             ("-d" "en_US" "--encoding=utf-8") nil utf-8)
+            ("british" ; British English
+             "[A-Za-z]" "[^A-Za-z]" "[']" t
+             ("-d" "en_GB" "--encoding=utf-8") nil utf-8)))))
 
     (add-hook 'text-mode-hook 'flyspell-mode)
     (add-hook 'prog-mode-hook 'flyspell-prog-mode)))

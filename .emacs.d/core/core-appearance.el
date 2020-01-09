@@ -102,4 +102,8 @@ The return value is nil if no font was found, truthy otherwise."
 ;; Keep a clock in the modeline.
 (display-time-mode 1)
 
+;; Keep the OSX mouse colour black.
+(if (eq system-type 'darwin)
+    (set-mouse-color "black"))
+
 (provide 'core-appearance)
