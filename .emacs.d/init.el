@@ -301,6 +301,7 @@
 (require 'org-mode-basic)
 (require 'org-mode-organisation)
 (require 'org-mode-templates)
+(require 'org-mode-download)
 
 ;; Programming config
 (require 'programming-git)

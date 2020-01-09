@@ -11,6 +11,7 @@
 (setq org-personal-file (concat org-directory "/personal.org"))
 (setq org-work-file (concat org-directory "/work.org"))
 
+(setq org-bass-file (concat org-directory "/bass.org"))
 (setq org-tasks-file (concat org-directory "/tasks.org"))
 (setq org-journal-file (concat org-directory "/journal.org"))
 
@@ -21,6 +22,7 @@
             `(,org-tasks-file
               ,org-journal-file
               ,org-personal-file
+              ,org-bass-file
               ,org-birthdays-file
               ,org-work-file))))
 
@@ -42,5 +44,28 @@
 
 ;; Start weeks on a Saturday, since I'm done for work on the Friday.
 (setq org-agenda-start-on-weekday 6)
+
+;; Better Org Agenday Layout
+(use-package org-super-agenda
+  :demand
+  :after org
+  :config
+  (org-super-agenda-mode t)
+  (setq org-super-agenda-groups
+      '((:name "Today"
+               :time-grid t
+               :date today
+               :todo "TODAY"
+               :scheduled today
+               :order 1)
+        (:name "Important"
+               :priority "A")
+        (:name "Quick Picks"
+               :effort< "0:30")
+        (:name "Overdue"
+               :deadline past)
+        (:name "Waiting..."
+               :todo "WAITING"
+               :order 98))))
 
 (provide 'org-mode-organisation)

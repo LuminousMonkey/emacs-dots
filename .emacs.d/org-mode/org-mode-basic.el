@@ -21,8 +21,9 @@
   :config
   (eval-after-load 'org-agenda
     '(bind-key "i" 'org-agenda-clock-in org-agenda-mode-map))
-  :bind (("C-c r" . org-capture)
-         ("C-c a" . org-agenda)))
+  :bind (("C-c c" . org-capture)
+         ("C-c a" . org-agenda)
+         ("C-c l" . org-store-link)))
 
 (setq org-latex-pdf-process
   '("xelatex -interaction nonstopmode %f"
