@@ -79,6 +79,12 @@ The return value is nil if no font was found, truthy otherwise."
 
 (load-theme 'monokai 'no-confirm)
 
+;; Configure the font system
+(use-package unicode-fonts
+  :demand
+  :config
+  (unicode-fonts-setup))
+
 ;; Be sure we have a fallback font for symbols. Also, could be running
 ;; emacs client, which doesn't appear to set the 'window-system. So,
 ;; attach to the hooks.
