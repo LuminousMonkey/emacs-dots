@@ -26,9 +26,11 @@ undohist
 /ede-projects.el
 old
 elpa
-/var
+.emacs.d/var
+.emacs.d/straight
 /.mc-lists.el
 /.tern-port
 /eshell/lastdir
 /projectile-bookmarks.eld
 .erc-auth
+nrepl-history
