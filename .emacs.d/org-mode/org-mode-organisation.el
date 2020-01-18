@@ -3,7 +3,7 @@
 ;; Config for my actual organisation in org mode.
 
 (if (eq system-type 'windows-nt)
-    (setq org-directory "~/../../Dropbox/GTD")
+    (setq org-directory "~/Dropbox/GTD")
   (setq org-directory "~/Dropbox/GTD"))
 
 (setq org-birthdays-file (concat org-directory "/birthdays.org"))
