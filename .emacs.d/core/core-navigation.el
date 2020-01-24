@@ -25,16 +25,6 @@
 
 (require 'use-package-chords)
 
-(use-package ace-jump-mode
-  :config
-  (setq ace-jump-mode-submode-list
-        '(ace-jump-char-mode
-          ace-jump-word-mode
-          ace-jump-line-mode))
-  :chords (("jj" . ace-jump-word-mode)
-       ("jl" . ace-jump-line-mode)
-       ("jZ" . ace-jump-zap-to-char)))
-
 (use-package avy
   :demand t
   :chords (("jj" . avy-goto-word-1)
