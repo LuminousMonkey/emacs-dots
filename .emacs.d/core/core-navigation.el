@@ -32,14 +32,21 @@
           ace-jump-word-mode
           ace-jump-line-mode))
   :chords (("jj" . ace-jump-word-mode)
-	   ("jl" . ace-jump-line-mode)
-	   ("jZ" . ace-jump-zap-to-char)))
+       ("jl" . ace-jump-line-mode)
+       ("jZ" . ace-jump-zap-to-char)))
 
 (use-package avy
   :demand t
-  :chords (("jj" . avy-goto-word-1))
+  :chords (("jj" . avy-goto-word-1)
+           ("jl" . avy-goto-line))
   :bind (("C-:" . avy-goto-char))
   :config
+  (setq avy-keys
+      (nconc (number-sequence ?a ?z)
+             (number-sequence ?A ?Z)
+             (number-sequence ?1 ?9)
+             '(?0)))
+  (setq avy-all-windows 'all-frames)
   (with-eval-after-load "isearch"
     (define-key isearch-mode-map (kbd "C-;") 'avy-isearch)))
 
@@ -55,16 +62,16 @@
   (require 'helm-config)
     (setq helm-candidate-number-limit 100)
     (setq helm-idle-delay 0.0
-	  helm-input-idle-delay 0.01
-	  helm-yas-display-key-on-candidate t
-	  helm-quick-update t
-	  helm-M-x-requires-pattern nil
-	  helm-ff-skip-boring-files t)
+      helm-input-idle-delay 0.01
+      helm-yas-display-key-on-candidate t
+      helm-quick-update t
+      helm-M-x-requires-pattern nil
+      helm-ff-skip-boring-files t)
     (helm-mode)
     (ido-mode -1)
   :bind (("M-x" . helm-M-x)
-	 ("C-x C-m" . helm-M-x)
-	 ("C-x C-f" . helm-find-files))
+     ("C-x C-m" . helm-M-x)
+     ("C-x C-f" . helm-find-files))
   :chords (("FF" . helm-find-files))
   :config
   (helm-autoresize-mode t)
@@ -96,7 +103,7 @@
 (use-package helm-descbinds
   :defer t
   :bind (("C-h b" . helm-descbinds)
-	 ("C-h w" . helm-descbinds)))
+     ("C-h w" . helm-descbinds)))
 
 ;; (use-package key-chord
 ;;   :config
