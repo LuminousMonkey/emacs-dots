@@ -74,17 +74,27 @@ The return value is nil if no font was found, truthy otherwise."
            powerline-scale 1)))
     (truncate (* scale (frame-char-height)))))
 
-;; (use-package monokai-theme
+;;(use-package monokai-theme
 ;;  :demand t)
 
-;; (load-theme 'monokai 'no-confirm)
+;;(load-theme 'monokai 'no-confirm)
 
-(use-package solarized-theme
+;; (use-package solarized-theme
+;;   :demand t
+;;   :config
+;;   (set-face-attribute 'mode-line nil :box nil)
+;;   (setq x-underline-at-descent-line t)
+;;   (load-theme 'solarized-light t))
+
+(use-package doom-themes
   :demand t
   :config
-  (set-face-attribute 'mode-line nil :box nil)
-  (setq x-underline-at-descent-line t)
-  (load-theme 'solarized-light t))
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-solarized-light t)
+
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
 
 ;; Configure the font system
 (use-package unicode-fonts
@@ -105,10 +115,7 @@ The return value is nil if no font was found, truthy otherwise."
                                            :family "Fira Code Medium"
                                            :size 18
                                            :weight normal
-                                           :width normal
-                                           :powerline-scale 1.4))
-        ;; Also fix powerline
-        (powerline-reset))))
+                                           :width normal)))))
 
 ;; Keep a clock in the modeline.
 (display-time-mode 1)

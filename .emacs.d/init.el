@@ -288,14 +288,14 @@
 (ad-activate 'server-create-window-system-frame)
 (add-hook 'after-make-frame-functions 'setup-window-system)
 
-(use-package spaceline
-  :init
-  (setq powerline-default-separator 'wave)
-  (require 'spaceline-config)
-  :config
-  (spaceline-emacs-theme)
-  (spaceline-helm-mode)
-  (setup-window-system))
+;; (use-package spaceline
+;;   :init
+;;   (setq powerline-default-separator 'wave)
+;;   (require 'spaceline-config)
+;;   :config
+;;   (spaceline-emacs-theme)
+;;   (spaceline-helm-mode)
+;;   (setup-window-system))
 
 ;; Start Org Mode
 (require 'org-mode-basic)
