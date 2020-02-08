@@ -351,9 +351,4 @@
 (use-package carbon-now-sh)
 
 (use-package ess
-  :init (require 'ess-site)
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . nil)
-     (R . t))))
+  :init (require 'ess-site))

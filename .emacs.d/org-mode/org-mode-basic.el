@@ -21,13 +21,21 @@
   :config
   (eval-after-load 'org-agenda
     '(bind-key "i" 'org-agenda-clock-in org-agenda-mode-map))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . nil)
+     (R . t)))
+  (defun luminousmonkey-org-confirm-babel-eval (lang body)
+    (not (or (string= lang "latex")
+             (string= lang "R"))))
+  (setq org-confirm-babel-evaluate 'luminousmonkey-org-confirm-babel-eval)
   :bind (("C-c c" . org-capture)
          ("C-c a" . org-agenda)
          ("C-c l" . org-store-link)))
 
 (setq org-latex-pdf-process
   '("xelatex -interaction nonstopmode %f"
-     "xelatex -interaction nonstopmode %f")) ;; for multiple passes
+    "xelatex -interaction nonstopmode %f")) ;; for multiple passes
 
 (setq org-latex-with-hyperref nil)
 
