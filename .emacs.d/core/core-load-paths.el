@@ -18,6 +18,9 @@
 (defconst luminousmonkey-gnus
   (expand-file-name (concat luminousmonkey-start-directory "override/gnus/lisp/"))
   "Gnus directory.")
+(defconst luminousmonkey-lilypond
+  (expand-file-name (concat luminousmonkey-start-directory "override/lilypond/"))
+  "Lilypond Emacs directory.")
 
 (defconst user-home-directory
   (expand-file-name "~/")
@@ -30,6 +33,7 @@
         ,luminousmonkey-org-directory
         ,luminousmonkey-social-directory
         ,luminousmonkey-gnus
+        ,luminousmonkey-lilypond
         ))
 
 (provide 'core-load-paths)
