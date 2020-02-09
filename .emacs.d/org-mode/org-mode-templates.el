@@ -9,10 +9,14 @@
 " "Basic task data")
 
 (defun capture-report-date-file (path)
-  (let ((name (read-string "File Title: ")))
-    (expand-file-name (format "%s-%s.org"
-                              (format-time-string "%Y-%m-%d")
-                              name) path)))
+  (let ((name (replace-regexp-in-string
+               " " "-"
+               (downcase
+                (read-string "File Title: ")))))
+    (expand-file-name
+     (format "%s-%s.org"
+             (format-time-string "%Y-%m-%d")
+             name) path)))
 
 (setq org-capture-templates
       `(("t" "Tasks" entry
@@ -27,7 +31,8 @@
          "%K = %a\n%i\n%?\n"
          :unnarrowed t)
         ("B" "Blog Entry" plain
-         (file (capture-report-date-file "~/Projects/monkey-blog/resources/posts/"))
+         (file (capture-report-date-file
+                "~/Projects/monkey-blog/posts/"))
          "#+title: %^{Title}
 #+date: %T\n\n%?"
          )
