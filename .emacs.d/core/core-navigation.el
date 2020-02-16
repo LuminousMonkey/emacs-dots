@@ -103,4 +103,10 @@
 ;;     ;; k can be bound too
 ;;     (key-chord-define-global "uu" 'undo)))
 
+(use-package ctrlf
+  :defer 3
+  :straight (ctrlf :host github :repo "raxod502/ctrlf")
+  :config
+  (ctrlf-mode))
+
 (provide 'core-navigation)

@@ -11,9 +11,86 @@
 
 ;; (package-initialize)
 
+;; -*- lexical-binding: t -*-
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; When configuring a feature with `use-package', also tell
+;; straight.el to install a package of the same name, unless otherwise
+;; specified using the `:straight' keyword.
+(setq straight-use-package-by-default t)
+
+(straight-use-package 'use-package)
+
+(use-package blackout
+  :straight (blackout :host github :repo "raxod502/blackout")
+  :demand t)
+
+(use-package el-patch
+         :straight t)
+
 ;; Personal Information
-(setq user-full-name "Mike Aldred"
+(setq user-full-name "Mike Alded"
       user-mail-address "mike.aldred@luminousmonkey.org")
+
+;; Package `no-littering' changes the default paths for lots of
+;; different packages, with the net result that the ~/.emacs.d folder
+;; is much more clean and organized.
+(use-package no-littering
+  :config
+  (require 'recentf)
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory)
+  :config
+  (setq auto-save-file-name-transforms
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+
+(use-package autorevert
+  :straight nil
+  :blackout t
+  :hook
+  (dired-mode . auto-revert-mode)
+  :config
+  (global-auto-revert-mode +1)
+  :custom
+  (auto-revert-verbose nil))
+
+;; Make it easier to answer questions.
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Make the selection work like most people expect.
+(delete-selection-mode t)
+(transient-mark-mode t)
+
+;; Sentences end in a single space
+(setq sentence-end-double-space nil)
+
+;; Code Style
+;; Default indentation
+(setq-default tab-width 2)
+(setq-default js-indent-level 2)
+
+;; Tab indentation is a disease; a cancer of this planet.
+(setq-default indent-tabs-mode nil)
+
+(setq-default truncate-lines t)
+
+(defun luminousmonkey/truncate-lines-hook ()
+  (setq truncate-lines nil))
+
+(add-hook 'text-mode-hook 'luminousmonkey/truncate-lines-hook)
+
+(setq create-lockfiles nil)
 
 ; Make sure we always use UTF-8.
 (set-terminal-coding-system 'utf-8)
@@ -26,13 +103,6 @@
 ;; Automatically save buffers before launching M-x compile and friends,
 ;; instead of asking you if you want to save.
 (setq compilation-ask-about-save nil)
-
-;; Make the selection work like most people expect.
-(delete-selection-mode t)
-(transient-mark-mode t)
-
-;; Automatically update unmodified buffers whose files have changed.
-(global-auto-revert-mode 1)
 
 ;; Make compilation buffers scroll to follow the output, but stop scrolling
 ;; at the first error.
@@ -54,49 +124,8 @@
 ;; Make sure Emacs perserves hardlinks.
 (setq backup-by-copying-when-linked t)
 
-;; Change backup directory, etc.
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-(setq delete-old-versions -1)
-(setq version-control t)
-(setq vc-make-backup-files t)
-(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
-
-;; History
-(setq savehist-file "~/.emacs.d/savehist")
-(savehist-mode 1)
-(setq history-length t)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history 1)
-(setq savehist-additional-variables
-      '(kill-ring
-        search-ring
-        regexp-search-ring))
-
-;; Make it easier to answer questions.
-(fset 'yes-or-no-p 'y-or-n-p)
-
 ;; Fix MAC Alt handling
 (setq mac-option-modifier 'meta)
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'use-package)
-
-;; When configuring a feature with `use-package', also tell
-;; straight.el to install a package of the same name, unless otherwise
-;; specified using the `:straight' keyword.
-(setq straight-use-package-by-default t)
 
 ;; Tell `use-package' to always load features lazily unless told
 ;; otherwise. It's nicer to have this kind of thing be deterministic:
@@ -104,12 +133,6 @@
 ;; loading is lazy. See
 ;; https://github.com/jwiegley/use-package#notes-about-lazy-loading.
 (setq use-package-always-defer t)
-
-;; Package `no-littering' changes the default paths for lots of
-;; different packages, with the net result that the ~/.emacs.d folder
-;; is much more clean and organized.
-(use-package no-littering
-  :demand t)
 
 ;; Keybindings done early here, just if something stuffs up.
 (require 'core-keybindings)
@@ -166,9 +189,6 @@
 ;; real one is registered.
 (straight-use-package 'org)
 
-(use-package el-patch
-         :straight t)
-
 (require 'core-funcs)
 
 ;; Theme, etc
@@ -179,8 +199,6 @@
 (setq visible-bell t)
 
 ;; Packages
-(use-package diminish)
-
 (require 'core-navigation)
 
 ;; Winner Mode
@@ -188,21 +206,11 @@
 (use-package winner
   :defer t)
 
-;; Sentences end in a single space
-(setq sentence-end-double-space nil)
-
-;; Code Style
-;; Tab indentation is a disease; a cancer of this planet.
-(set-default 'indent-tabs-mode nil)
-
 ;; Always newline-and-indent
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
-;; Default indentation
-(setq-default tab-width 4)
-
 (use-package ethan-wspace
-  :diminish " ☐"
+  :blackout " ☐"
   :commands global-ethan-wspace-mode
   :init
   (progn
@@ -210,7 +218,7 @@
     (setq mode-require-final-newline nil)))
 
 (use-package smartparens
-  :diminish " ⚖"
+  :blackout " ⚖"
   :init
   (progn
     (require 'smartparens-config)
@@ -274,8 +282,10 @@
     (show-smartparens-global-mode t)))
 
 (use-package rainbow-delimiters
-  :init
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode)
+  :config
+  (rainbow-delimiters-mode +1))
 
 (require 'server)
 

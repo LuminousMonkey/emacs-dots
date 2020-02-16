@@ -124,4 +124,45 @@ The return value is nil if no font was found, truthy otherwise."
 (if (eq system-type 'darwin)
     (set-mouse-color "black"))
 
+(setq show-paren-style 'paren
+      show-paren-delay 0.03
+      show-paren-highlight-openparen t
+      show-paren-when-point-inside-paren nil
+      show-paren-when-point-in-periphery t)
+(show-paren-mode 1)
+
+(use-package minions
+  :config
+  (minions-mode +1))
+
+(use-package beacon
+  :blackout beacon-mode
+  :custom
+  (beacon-push-mark 10)
+  :config
+  (beacon-mode +1))
+
+(use-package volatile-highlights
+  :blackout volatile-highlights-mode
+  :config
+  (volatile-highlights-mode +1))
+
+(use-package diff-hl
+  :hook
+  (dired-mode . diff-hl-dired-mode)
+  :init
+  (defconst luminousmonkey/diff-hl-mode-hooks '(emacs-lisp-mode-hook
+                                                conf-space-mode-hook ;.tmux.conf
+                                                markdown-mode-hook
+                                                css-mode-hook
+                                                web-mode-hook
+                                                sh-mode-hook
+                                                python-mode-hook
+                                                yaml-mode-hook ;tmuxp yaml configs
+                                                c-mode-hook)
+    "List of hooks of major modes in which diff-hl-mode should be enabled.")
+
+  (dolist (hook luminousmonkey/diff-hl-mode-hooks)
+    (add-hook hook #'diff-hl-flydiff-mode)))
+
 (provide 'core-appearance)
