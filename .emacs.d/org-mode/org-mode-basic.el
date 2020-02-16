@@ -1,11 +1,15 @@
 ;;; Basic Org Mode Settings
 
+(use-package org-bullets
+  :after org
+  :hook
+  (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list
+   '("◉" "○")))
+
 (use-package org
   :init
-  ;; Show the formatted text of *bold*, /italics/, but not the
-  ;; characters used to mark then out.
-  (setq org-hide-emphasis-markers t)
-
   ;; Show any source blocks in their native mode.
   (setq org-src-fontify-natively t)
 
@@ -21,17 +25,27 @@
   :config
   (eval-after-load 'org-agenda
     '(bind-key "i" 'org-agenda-clock-in org-agenda-mode-map))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . nil)
-     (R . t)))
   (defun luminousmonkey-org-confirm-babel-eval (lang body)
     (not (or (string= lang "latex")
              (string= lang "R"))))
   (setq org-confirm-babel-evaluate 'luminousmonkey-org-confirm-babel-eval)
   :bind (("C-c c" . org-capture)
          ("C-c a" . org-agenda)
-         ("C-c l" . org-store-link)))
+         ("C-c l" . org-store-link))
+  :custom
+  (org-src-window-setup 'current-window)
+  (org-babel-load-languages
+   '((emacs-lisp . t)
+     (R . t)))
+  (org-confirm-babel-evaluate nil)
+  (org-catch-invisible-edits 'show)
+  :custom-face
+  (variable-pitch ((t (:family "ETBookOT"))))
+  (org-done ((t (:strike-through t :weight bold))))
+  (org-headline-done ((t (:strike-through t))))
+  (org-level-1 ((t (:height 1.3 :weight bold))))
+  (org-level-2 ((t (:height 1.2 :weight bold))))
+  (org-level-3 ((t (:height 1.1 :weight bold)))))
 
 (setq org-latex-pdf-process
   '("xelatex -interaction nonstopmode %f"
@@ -60,5 +74,29 @@
                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+
+(defun luminousmonkey/style-org ()
+  (setq line-spacing 0.2)
+  (variable-pitch-mode +1)
+  (mapc
+   (lambda (face) ;; Other fonts with fixed-pitch.
+     (set-face-attribute face nil :inherit 'fixed-pitch))
+   (list 'org-code
+         'org-link
+         'org-block
+         'org-table
+         'org-verbatim
+         'org-block-begin-line
+         'org-block-end-line
+         'org-meta-line
+         'org-document-info-keyword)))
+
+(add-hook 'org-mode-hook #'luminousmonkey/style-org)
+
+(setq org-startup-indented nil
+      org-hide-leading-stars nil
+      org-hide-emphasis-markers nil
+      org-pretty-entities nil
+      org-adapt-indentation nil)
 
 (provide 'org-mode-basic)

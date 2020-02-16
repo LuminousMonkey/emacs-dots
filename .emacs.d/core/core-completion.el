@@ -3,7 +3,7 @@
 ;; Auto complete
 (use-package company
   :init (global-company-mode)
-  :diminish
+  :blackout company-mode
   :commands (company-mode company-complete-common)
   :bind (("C-<tab>" . company-complete-common)
          :map company-mode-map

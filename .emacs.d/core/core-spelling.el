@@ -7,7 +7,11 @@
 (make-variable-buffer-local 'flyspell-check-doublon)
 
 (use-package flyspell
-  :diminish " ⓒ"
+  :straight nil
+  :blackout " ⓒ"
+  :hook
+  (text-mode . flyspell-mode)
+  (prog-mode . flyspell-prog-mode)
   :config
   (progn
     (setq ispell-program-name "aspell"
@@ -28,9 +32,6 @@
              ("-d" "en_US" "--encoding=utf-8") nil utf-8)
             ("british" ; British English
              "[A-Za-z]" "[^A-Za-z]" "[']" t
-             ("-d" "en_GB" "--encoding=utf-8") nil utf-8)))))
-
-    (add-hook 'text-mode-hook 'flyspell-mode)
-    (add-hook 'prog-mode-hook 'flyspell-prog-mode)))
+             ("-d" "en_GB" "--encoding=utf-8") nil utf-8)))))))
 
 (provide 'core-spelling)

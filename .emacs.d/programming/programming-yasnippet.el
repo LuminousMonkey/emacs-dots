@@ -1,6 +1,8 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (use-package yasnippet
+  :blackout ((yas-global-mode . t)
+             (yas-minor-mode . t))
   :init
   (yas-global-mode t)
   :config
@@ -8,6 +10,6 @@
   ;; Adding yasnippet support to company
   ;;(with-eval-after-load "company"
   ;;  (add-to-list 'company-backends '(company-yasnippet)))
-  :diminish yas-minor-mode)
+  )
 
 (provide 'programming-yasnippet)

@@ -314,6 +314,7 @@
 (require 'org-mode-download)
 
 ;; Programming config
+(require 'programming-general)
 (require 'programming-git)
 (require 'programming-project)
 (require 'programming-clojure)
@@ -322,6 +323,7 @@
 (require 'programming-commonlisp)
 (require 'programming-yasnippet)
 (require 'programming-6502)
+(require 'programming-html)
 
 ;; Spelling config
 (require 'core-spelling)
