@@ -2,11 +2,11 @@
 
 ;; Projectile
 (use-package projectile
+  :blackout projectile-mode
   :demand t
   :commands projectile-global-mode
   :config
-  (projectile-global-mode)
-  :diminish projectile-mode)
+  (projectile-global-mode))
 
 (use-package helm-projectile
   :bind ("C-c C-f" . helm-projectile-find-file)
