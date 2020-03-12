@@ -400,8 +400,7 @@ Probably the best thing about Emacs.
        (R . t)))
     (org-confirm-babel-evaluate nil)
     (org-latex-pdf-process
-     '("xelatex -interaction nonstopmode %f"
-       "xelatex -interaction nonstopmode %f"))
+     (list "latexmk -pdflatex=xelatex -shell-escape -bibtex -f -pdf %f"))
     (org-latex-with-hyperref nil)
     (org-agenda-span 2)
     (org-agenda-sticky nil)
@@ -1002,4 +1001,35 @@ electric-indent-mode.
     (aggressive-indent-comments-too t)
     :config
     (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
+#+end_src
+** Note-taking
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure nil
+    :commands (org-roam-build-cache)
+    :straight (:host github :repo "jethrokuan/org-roam")
+    :hook
+    (after-init . org-roam-mode)
+    :bind (:map org-roam-mode-map
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n g" . org-roam-show-graph)
+                 ("C-c n b" . org-roam-switch-to-buffer))
+                :map org-mode-map
+                (("C-c n i" . org-roam-insert)))
+    :custom
+    (org-roam-directory "~/Dropbox/Braindump/"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package org-ref
+    :after org
+    :init
+    (setq org-ref-completion-library 'org-ref-ivy-cite)
+    (setq reftex-default-bibliography '("~/Dropbox/Research/references.bib"))
+    (setq org-ref-bibliography-notes "~/Dropbox/Research/notes/notes.org"
+          org-ref-default-bibliography '("~/Dropbox/Research/references.bib")
+          org-ref-pdf-directory "~/Dropbox/papers/")
+    (require 'doi-utils)
+    (require 'org-ref-isbn))
 #+end_src
