@@ -355,16 +355,6 @@ Key chords allows you to press two keys in quick succession to run a command.
     (with-eval-after-load "isearch"
       (define-key isearch-mode-map (kbd "C-;") 'avy-isearch)))
 #+end_src
-*** Beacon
-Show where the cursor has moved to.
-#+begin_src emacs-lisp
-  (use-package beacon
-    :blackout beacon-mode
-    :custom
-    (beacon-push-mark 10)
-    :config
-    (beacon-mode +1))
-#+end_src
 ** Parentheses
 Highlight parenthese-like delimiters in a rainbow fashion. It ease the reading when dealing with mismatched parentheses.
 #+begin_src emacs-lisp
