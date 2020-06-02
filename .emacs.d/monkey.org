@@ -220,25 +220,23 @@ I like to get into the theme as quickly as possible, if something goes wrong, I 
       (set-face-attribute 'flycheck-warning nil :underline `(:color ,(doom-color 'warning) :style line))))
 
   (defun setup-window-system (&rest frame)
-    (if (window-system)
-        (progn
-          (set-frame-size (selected-frame) 120 60)
-          (luminousmonkey/set-default-font '("Fira Code Medium:regular"
-                                             :size 14.0
-                                             :weight normal
-                                             :width normal
-                                             :powerline-scale 1.4)))))
+    (progn
+      (luminousmonkey/set-default-font '("Fira Code Medium:regular"
+                                         :size 14.0
+                                         :weight normal
+                                         :width normal
+                                         :powerline-scale 1.4))))
 
   (require 'server)
 
   (defadvice server-create-window-system-frame
       (after set-window-system-frame-colours ())
     "Set custom frame colours when create the first frame on a display"
-    (message "Running after frame-initialize")
     (setup-window-system))
 
   (ad-activate 'server-create-window-system-frame)
   (add-hook 'after-make-frame-functions 'setup-window-system)
+  (add-hook 'focus-in-hook 'setup-window-system)
 #+end_src
 *** Modeline
 #+begin_src emacs-lisp
@@ -260,7 +258,6 @@ I use an Emacs daemon, so some settings don't get set on the client from the Ema
   (defun luminousmonkey/run-client-settings (&rest frame)
     (if (window-system)
         (progn
-          (dynamic-fonts-setup)
           (setq doom-modeline-icon (display-graphic-p)))))
 
     (require 'server)
@@ -1168,37 +1165,6 @@ electric-indent-mode.
     :bind (("C-x g" . magit-status)))
 #+end_src
 
-** Note-taking
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :ensure nil
-    :commands (org-roam-build-cache)
-    :straight (:host github :repo "jethrokuan/org-roam")
-    :hook
-    (after-init . org-roam-mode)
-    :bind (:map org-roam-mode-map
-                (("C-c n l" . org-roam)
-                 ("C-c n f" . org-roam-find-file)
-                 ("C-c n g" . org-roam-show-graph)
-                 ("C-c n b" . org-roam-switch-to-buffer))
-                :map org-mode-map
-                (("C-c n i" . org-roam-insert)))
-    :custom
-    (org-roam-directory "~/Dropbox/Braindump/"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package org-ref
-    :after org
-    :init
-    (setq org-ref-completion-library 'org-ref-ivy-cite)
-    (setq reftex-default-bibliography '("~/Dropbox/Research/references.bib"))
-    (setq org-ref-bibliography-notes "~/Dropbox/Research/notes/notes.org"
-          org-ref-default-bibliography '("~/Dropbox/Research/references.bib")
-          org-ref-pdf-directory "~/Dropbox/papers/")
-    (require 'doi-utils)
-    (require 'org-ref-isbn))
-#+end_src
 
 #+begin_src emacs-lisp
   (setup-window-system)
