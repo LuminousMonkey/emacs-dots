@@ -210,7 +210,7 @@ I like to get into the theme as quickly as possible, if something goes wrong, I 
     (doom-themes-enable-bold t)
     (doom-themes-enable-italic t)
     :config
-    (load-theme 'doom-one-light t)
+    (load-theme 'doom-one t)
     (doom-themes-visual-bell-config)
     (doom-themes-org-config)
     (with-eval-after-load 'flycheck
