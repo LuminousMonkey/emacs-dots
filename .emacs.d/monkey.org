@@ -97,6 +97,12 @@ Initial keybindings that I want fairly early in the config, because I'm used to 
   (define-key global-map (kbd "C-x C-k") 'kill-region)
   (define-key global-map (kbd "C-c C-k") 'kill-region)
 #+end_src
+*** Learning Emacs
+    Discovery, so I can find out little modes and things that I don't know or practice.
+#+begin_src emacs-lisp
+  (use-package discover
+    :config (global-discover-mode 1))
+#+end_src
 ** Appearance
 *** Basic appearance
 Remove the toolbar and the scrollbar, keep the menu though, I might discover new features I didn't know.
@@ -107,97 +113,6 @@ Remove the toolbar and the scrollbar, keep the menu though, I might discover new
   (setq-default
    inhibit-startup-screen t
    initial-scratch-message "")
-#+end_src
-*** Font
-#+begin_src emacs-lisp
-  (defun luminousmonkey/mplist-remove (plist prop)
-    "Return a copy of a modified PLIST without PROP and its values.
-  If there are multiple properties with the same keyword, only the first property
-  and its values are removed."
-    (let ((tail plist)
-          result)
-      (while (and (consp tail) (not (eq prop (car tail))))
-        (push (pop tail) result))
-      (when (eq prop (car tail))
-        (pop tail)
-        (while (and (consp tail) (not (keywordp (car tail))))
-          (pop tail)))
-      (while (consp tail)
-        (push (pop tail) result))
-      (nreverse result)))
-
-  (defun luminousmonkey/compute-powerline-height ()
-    "Return an adjusted powerline height."
-    (let ((scale (if (and (boundp 'powerline-scale) powerline-scale)
-                     powerline-scale 1)))
-      (truncate (* scale (frame-char-height)))))
-
-  ;; Shamelessly ripped from Spacemacs.
-  (defun luminousmonkey/set-default-font (plists)
-    "Set the font given the passed PLISTS.
-
-  PLISTS has either the form (\"fontname\" :prop1 val1 :prop2 val2 ...)
-  or is a list of such. The first font that can be found will be used.
-
-  The return value is nil if no font was found, truthy otherwise."
-    (unless (listp (car plists))
-      (setq plists (list plists)))
-    (catch 'break
-      (dolist (plist plists)
-        (when (find-font (font-spec :name (car plist)))
-          (let* ((font (car plist))
-                 (props (cdr plist))
-                 (scale (plist-get props :powerline-scale))
-                 (font-props (luminousmonkey/mplist-remove
-                              (luminousmonkey/mplist-remove props :powerline-scale)
-                              :powerline-offset))
-                 (fontspec (apply 'font-spec :name font font-props)))
-            (set-frame-font fontspec nil t)
-            (push `(font . ,(frame-parameter nil 'font)) default-frame-alist)
-            (setq-default powerline-scale scale)
-            (setq-default powerline-height (luminousmonkey/compute-powerline-height))
-            ;; Fallback font for Unicode characters used.
-            (pcase system-type
-              (`gnu/linux
-               (setq fallback-font-name "NanumGothic")
-               (setq fallback-font-name2 "NanumGothic"))
-              (`darwin
-               (setq fallback-font-name "Arial Unicode MS")
-               (setq fallback-font-name2 "Arial Unicode MS"))
-              (`windows-nt
-               (setq fallback-font-name "MS Gothic")
-               (setq fallback-font-name2 "Lucida Sans Unicode"))
-              (`cygwin
-               (setq fallback-font-name "MS Gothic")
-               (setq fallback-font-name2 "Lucida Sans Unicode"))
-              (other
-               (setq fallback-font-name nil)
-               (setq fallback-font-name2 nil)))
-            (when (and fallback-font-name fallback-font-name2)
-              (let* ((fallback-props (luminousmonkey/mplist-remove
-                                      (luminousmonkey/mplist-remove font-props :size)
-                                      :height))
-                     (fallback-spec (apply 'font-spec
-                                           :name fallback-font-name
-                                           fallback-props))
-                     (fallback-spec2 (apply 'font-spec
-                                            :name fallback-font-name2
-                                            fallback-props)))
-                ;; Window numbers.
-                (set-fontset-font "fontset-default"
-                                  '(#x2776 . #x24fe) fallback-spec nil 'prepend)
-                ;; Mode-line circled letters.
-                (set-fontset-font "fontset-default"
-                                  '(#x24b6 . #x24fe) fallback-spec nil 'prepend)
-                ;; Mode-line additional characters
-                (set-fontset-font "fontset-default"
-                                  '(#x2295 . #x22a1) fallback-spec nil 'prepend)
-                ;; New version lighter
-                (set-fontset-font "fontset-default"
-                                  '(#x2190 . #x2200) fallback-spec2 nil 'prepend))))
-          (throw 'break t)))
-      nil))
-
 #+end_src
 
 *** Theme
@@ -218,25 +133,6 @@ I like to get into the theme as quickly as possible, if something goes wrong, I 
       (set-face-attribute 'flycheck-info nil :underline `(:color ,(doom-color 'highlight) :style line))
       (set-face-attribute 'flycheck-info nil :underline `(:color ,(doom-color 'highlight) :style line))
       (set-face-attribute 'flycheck-warning nil :underline `(:color ,(doom-color 'warning) :style line))))
-
-  (defun setup-window-system (&rest frame)
-    (progn
-      (luminousmonkey/set-default-font '("Fira Code Medium:regular"
-                                         :size 14.0
-                                         :weight normal
-                                         :width normal
-                                         :powerline-scale 1.4))))
-
-  (require 'server)
-
-  (defadvice server-create-window-system-frame
-      (after set-window-system-frame-colours ())
-    "Set custom frame colours when create the first frame on a display"
-    (setup-window-system))
-
-  (ad-activate 'server-create-window-system-frame)
-  (add-hook 'after-make-frame-functions 'setup-window-system)
-  (add-hook 'focus-in-hook 'setup-window-system)
 #+end_src
 *** Modeline
 #+begin_src emacs-lisp
@@ -246,6 +142,8 @@ I like to get into the theme as quickly as possible, if something goes wrong, I 
 #+end_src
 *** Highlights
 #+begin_src emacs-lisp
+  (global-hl-line-mode +1)
+
   (use-package volatile-highlights
     :blackout volatile-highlights-mode
     :config
@@ -394,6 +292,7 @@ Be sure to highlight matching parens
         show-paren-when-point-inside-paren nil
         show-paren-when-point-in-periphery t)
 
+  (show-paren-mode)
 #+end_src
 ** Point and Region
 Increase region by semantic units. It tries to be smart about it and adapt to
@@ -1194,9 +1093,4 @@ electric-indent-mode.
 #+begin_src emacs-lisp
   (use-package magit
     :bind (("C-x g" . magit-status)))
-#+end_src
-
-
-#+begin_src emacs-lisp
-  (setup-window-system)
 #+end_src

@@ -47,6 +47,47 @@
 
 (straight-use-package 'use-package)
 
+(use-package dynamic-fonts
+  :commands (dynamic-fonts-setup)
+  :init
+  (progn
+    (setq
+     dynamic-fonts-preferred-monospace-fonts
+     '("Fira Code Medium" "PragmataPro" "Consolas" "Monaco" "Menlo"
+       "DejaVu Sans Mono"
+       "Droid Sans Mono Pro" "Droid Sans Mono" "Inconsolata" "Source Code Pro"
+       "Lucida Console" "Envy Code R" "Andale Mono" "Lucida Sans Typewriter"
+       "Lucida Typewriter" "Panic Sans" "Bitstream Vera Sans Mono"
+       "Excalibur Monospace" "Courier New" "Courier" "Cousine" "Lekton"
+       "Ubuntu Mono" "Liberation Mono" "BPmono" "Anonymous Pro"
+       "ProFontWindows")
+     dynamic-fonts-preferred-monospace-point-size 14
+     dynamic-fonts-preferred-proportional-fonts
+     '("PT Sans" "Lucida Grande" "Segoe UI" "DejaVu Sans" "Bitstream Vera"
+       "Tahoma" "Verdana" "Helvetica" "Arial Unicode MS" "Arial")
+     dynamic-fonts-preferred-proportional-point-size 11)
+
+    (defvar my-monospaced-font "PragmataPro-11.8")
+    (defvar my-variable-pitch-font "Pt Sans-13")
+    ;; (defvar my-variable-pitch-font "Input Sans Compressed-11.8")
+    ;; (defvar my-monospaced-font "Input Mono Compressed-11.8")
+
+    (defun my-set-fonts  ()
+      (interactive)
+      (when window-system
+        (condition-case nil
+            (progn
+              (set-face-attribute 'default nil :font my-monospaced-font)
+              ;; (set-face-attribute 'default nil :font my-monospaced-font :width 'ultra-condensed :weight 'normal )
+              (set-face-attribute 'fixed-pitch nil :font my-monospaced-font)
+              (set-face-attribute 'variable-pitch nil :font my-variable-pitch-font))
+          (error
+           (progn
+             (message
+              "Setting default fonts failed, running dynamic-fonts-setup...")
+             (dynamic-fonts-setup))))))
+    (add-hook 'after-init-hook 'my-set-fonts t)))
+
 (use-package blackout
   :straight (blackout :host github :repo "raxod502/blackout")
   :demand t)
