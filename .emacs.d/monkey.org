@@ -272,6 +272,7 @@ Highlight parenthese-like delimiters in a rainbow fashion. It ease the reading w
      ("M-k" . sp-raise-sexp))
     :hook
     (after-init . smartparens-global-mode)
+    (clojure-mode-hook . smartparens-strict-mode)
     :custom
     (sp-highlight-pair-overlay nil)
     (sp-highlight-wrap-overlay nil)
@@ -718,38 +719,13 @@ Frequently accessed files.
   (setq holiday-bahai-holidays nil)
   (setq holiday-oriental-holidays nil)
 #+end_src
-*** Ocaml
+*** 6502 Assembly
 #+begin_src emacs-lisp
-  (and (require 'cl)
-       (use-package tuareg
-         :ensure t
-         :config
-         (add-hook 'tuareg-mode-hook #'electric-pair-local-mode)
-         ;; (add-hook 'tuareg-mode-hook 'tuareg-imenu-set-imenu)
-         (setq auto-mode-alist
-               (append '(("\\.ml[ily]?$" . tuareg-mode)
-                         ("\\.topml$" . tuareg-mode))
-                       auto-mode-alist)))
-
-       ;; Merlin configuration
-
-       (use-package merlin
-         :ensure t
-         :config
-         (add-hook 'tuareg-mode-hook 'merlin-mode)
-         (add-hook 'merlin-mode-hook #'company-mode)
-         (setq merlin-error-after-save nil))
-
-       ;; utop configuration
-
-       (use-package utop
-         :ensure t
-         :config
-         (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
-         (add-hook 'tuareg-mode-hook 'utop-minor-mode)
-         ))
+  (use-package kickasm-mode
+    :load-path "lisp/"
+    :straight nil
+    :config (setq kickasm-command "java -cp \"c:/tools/kickasm/*\" kickass.KickAssembler"))
 #+end_src
-
 ** Features
 *** Auto-Completion
 Auto-completion at point. Display a small pop-in containing the candidates.
