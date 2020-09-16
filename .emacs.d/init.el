@@ -53,7 +53,7 @@
   (progn
     (setq
      dynamic-fonts-preferred-monospace-fonts
-     '("Fira Code Medium" "PragmataPro" "Consolas" "Monaco" "Menlo"
+     '("Triplicate T4c" "Fira Code Medium" "PragmataPro" "Consolas" "Monaco" "Menlo"
        "DejaVu Sans Mono"
        "Droid Sans Mono Pro" "Droid Sans Mono" "Inconsolata" "Source Code Pro"
        "Lucida Console" "Envy Code R" "Andale Mono" "Lucida Sans Typewriter"
@@ -61,7 +61,7 @@
        "Excalibur Monospace" "Courier New" "Courier" "Cousine" "Lekton"
        "Ubuntu Mono" "Liberation Mono" "BPmono" "Anonymous Pro"
        "ProFontWindows")
-     dynamic-fonts-preferred-monospace-point-size 16
+     dynamic-fonts-preferred-monospace-point-size 18
      dynamic-fonts-preferred-proportional-fonts
      '("PT Sans" "Lucida Grande" "Segoe UI" "DejaVu Sans" "Bitstream Vera"
        "Tahoma" "Verdana" "Helvetica" "Arial Unicode MS" "Arial")
@@ -72,6 +72,8 @@
     ;; (defvar my-variable-pitch-font "Input Sans Compressed-11.8")
     ;; (defvar my-monospaced-font "Input Mono Compressed-11.8")
 
+    ;; Attach to the 'focus-in-hook, it will remove itself first time it is run,
+    ;; since it's only needed once.
     (defun my-set-fonts  ()
       (interactive)
       (when window-system
@@ -85,8 +87,9 @@
            (progn
              (message
               "Setting default fonts failed, running dynamic-fonts-setup...")
-             (dynamic-fonts-setup))))))
-    (add-hook 'after-init-hook 'my-set-fonts t)))
+             (dynamic-fonts-setup)))))
+      (remove-hook 'focus-in-hook #'my-set-fonts))
+    (add-hook 'focus-in-hook #'my-set-fonts t)))
 
 (use-package blackout
   :straight (blackout :host github :repo "raxod502/blackout")
@@ -288,7 +291,8 @@
 ;; Modeline
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  )
 
 ;; Highlights
 (global-hl-line-mode +1)
