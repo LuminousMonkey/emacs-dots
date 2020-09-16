@@ -283,6 +283,7 @@ Probably the best thing about Emacs.
     (org-latex-pdf-process
      (list "latexmk -pdflatex=xelatex -shell-escape -bibtex -f -pdf %f"))
     (org-latex-with-hyperref nil)
+    (org-latex-packages-alist '(("" "minted")))
     (org-agenda-span 2)
     (org-agenda-sticky nil)
     (org-agenda-inhibit-startup t)
@@ -302,14 +303,17 @@ Probably the best thing about Emacs.
     :config
     (eval-after-load 'org-agenda
       '(bind-key "i" 'org-agenda-clock-in org-agenda-mode-map))
-    (require 'org-habit))
+    (require 'org-habit)
+    (require 'ox-latex)
+    (setq org-latex-listings 'minted)
+    )
 
   (eval-after-load 'org
     '(org-load-modules-maybe t))
 
   (add-hook 'org-mode-hook 'visual-line-mode)
 
-
+  (add-to-list 'org-latex-minted-langs '(sql "mysql"))
 
   (setq org-directory (if (string-equal system-type "windows-nt")
                           "~/../../Dropbox/GTD/"
