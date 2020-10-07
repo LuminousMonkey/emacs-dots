@@ -112,6 +112,27 @@ Allowable values for OS (not quoted) are `macOS', `osx',
   `(when (radian-operating-system-p ,os)
      ,@body))
 
+(defmacro radian-flet (bindings &rest body)
+  "Temporarily override function definitions using `cl-letf*'.
+BINDINGS are composed of `defun'-ish forms. NAME is the function
+to override. It has access to the original function as a
+lexically bound variable by the same name, for use with
+`funcall'. ARGLIST and BODY are as in `defun'.
+\(fn ((defun NAME ARGLIST &rest BODY) ...) BODY...)"
+  (declare (indent defun))
+  `(cl-letf* (,@(cl-mapcan
+                 (lambda (binding)
+                   (when (memq (car binding) '(defun lambda))
+                     (setq binding (cdr binding)))
+                   (cl-destructuring-bind (name arglist &rest body) binding
+                     (list
+                      `(,name (symbol-function #',name))
+                      `((symbol-function #',name)
+                        (lambda ,arglist
+                          ,@body)))))
+                 bindings))
+     ,@body))
+
 ;; I keep my configs using dotdotdot, and I use hardlinks.
 ;; Make sure Emacs perserves hardlinks.
 (setq backup-by-copying-when-linked t)
@@ -258,6 +279,17 @@ NAME and ARGS are as in `use-package'."
 (bind-key* "C-x C-k" #'kill-region)
 (bind-key* "C-c C-k" #'kill-region)
 
+(defvar radian-keymap (make-sparse-keymap)
+  "Keymap for Radian commands that should be put under a prefix.
+This keymap is bound under \\[radian-keymap].")
+
+(bind-key* "M-P" radian-keymap)
+
+(defmacro radian-bind-key (key-name command &optional predicate)
+  "Bind a key in `radian-keymap'.
+KEY-NAME, COMMAND, and PREDICATE are as in `bind-key'."
+  `(bind-key ,key-name ,command radian-keymap ,predicate))
+
 ;; Package `which-key' displays the key bindings and associated
 ;; commands following the currently-entered key prefix in a popup.
 (use-package which-key
@@ -335,6 +367,33 @@ NAME and ARGS are as in `use-package'."
   :bind (([remap list-buffers] . #'ibuffer)))
 
 ;; Theme
+(add-to-list 'default-frame-alist '(font . "Fira Code Medium-16"))
+
+;; I like to get into the theme as quickly as possible, if something goes wrong,
+;; I want my font, and my colours.
+(use-package doom-themes
+  :demand t
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
+  :config
+  (load-theme 'doom-molokai t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config)
+  (with-eval-after-load 'flycheck
+    (set-face-attribute 'flycheck-error nil
+                        :underline `(:color ,(doom-color 'error)
+                                            :style line))
+    (set-face-attribute 'flycheck-info nil
+                        :underline `(:color ,(doom-color
+                                              'highlight) :style line))
+    (set-face-attribute 'flycheck-info nil
+                        :underline `(:color ,(doom-color
+                                              'highlight) :style line))
+    (set-face-attribute 'flycheck-warning nil
+                        :underline `(:color ,(doom-color
+                                              'warning) :style line))))
+
 ;; Modeline
 (use-package doom-modeline
   :ensure t
@@ -507,6 +566,134 @@ two inserted lines are the same."
 ;; type.
 (use-package visual-regexp
   :bind (([remap query-replace] . #'vr/query-replace)))
+
+;; Key chords
+(use-package use-package-chords
+  :config (key-chord-mode 1))
+
+(require 'use-package-chords)
+
+;; Line and word jumping
+(use-package avy
+  :demand t
+  :chords (("jj" . avy-goto-word-1)
+           ("jl" . avy-goto-line))
+  :bind (("C-:" . avy-goto-char))
+  :config
+  (setq avy-keys
+        (nconc (number-sequence ?a ?z)
+               (number-sequence ?A ?Z)
+               (number-sequence ?1 ?9)
+               '(?0)))
+  (setq avy-all-windows 'all-frames)
+  (with-eval-after-load "isearch"
+    (define-key isearch-mode-map (kbd "C-;") 'avy-isearch)))
+
+;;;; Automatic delimiter pairing
+
+;; Package `smartparens' provides an API for manipulating paired
+;; delimiters of many different types, as well as interactive commands
+;; and keybindings for operating on paired delimiters at the
+;; s-expression level. It provides a Paredit compatibility layer.
+(use-package smartparens
+  :demand t
+  :config
+
+  ;; Load the default pair definitions for Smartparens.
+  (require 'smartparens-config)
+
+  ;; Enable Smartparens functionality in all buffers.
+  (smartparens-global-mode +1)
+
+  ;; When in Paredit emulation mode, Smartparens binds M-( to wrap the
+  ;; following s-expression in round parentheses. By analogy, we
+  ;; should bind M-[ to wrap the following s-expression in square
+  ;; brackets. However, this breaks escape sequences in the terminal,
+  ;; so it may be controversial upstream. We only enable the
+  ;; keybinding in windowed mode.
+  (when (display-graphic-p)
+    (setf (map-elt sp-paredit-bindings "M-[") #'sp-wrap-square))
+
+  ;; Set up keybindings for s-expression navigation and manipulation
+  ;; in the style of Paredit.
+  (sp-use-paredit-bindings)
+
+  ;; Highlight matching delimiters.
+  (show-smartparens-global-mode +1)
+
+  ;; Prevent all transient highlighting of inserted pairs.
+  (setq sp-highlight-pair-overlay nil)
+  (setq sp-highlight-wrap-overlay nil)
+  (setq sp-highlight-wrap-tag-overlay nil)
+
+  ;; Don't disable autoskip when point moves backwards. (This lets you
+  ;; open a sexp, type some things, delete some things, etc., and then
+  ;; type over the closing delimiter as long as you didn't leave the
+  ;; sexp entirely.)
+  (setq sp-cancel-autoskip-on-backward-movement nil)
+
+  ;; Disable Smartparens in Org-related modes, since the keybindings
+  ;; conflict.
+
+  (use-feature org
+    :config
+
+    (add-to-list 'sp-ignore-modes-list #'org-mode))
+
+  (use-feature org-agenda
+    :config
+
+    (add-to-list 'sp-ignore-modes-list #'org-agenda-mode))
+
+  ;; Make C-k kill the sexp following point in Lisp modes, instead of
+  ;; just the current line.
+  (bind-key [remap kill-line] #'sp-kill-hybrid-sexp smartparens-mode-map
+            (apply #'derived-mode-p sp-lisp-modes))
+
+  (defun radian--smartparens-indent-new-pair (&rest _)
+    "Insert an extra newline after point, and reindent."
+    (newline)
+    (indent-according-to-mode)
+    (forward-line -1)
+    (indent-according-to-mode))
+
+  ;; The following is a really absurdly stupid hack that I can barely
+  ;; stand to look at. It needs to be fixed.
+  ;;
+  ;; Nevertheless, I can't live without the feature it provides (which
+  ;; should really come out of the box IMO): when pressing RET after
+  ;; inserting a pair, add an extra newline and indent. See
+  ;; <https://github.com/Fuco1/smartparens/issues/80#issuecomment-18910312>.
+
+  (defun radian--smartparens-pair-setup (mode delim)
+    "In major mode MODE, set up DELIM with newline-and-indent."
+    (sp-local-pair mode delim nil :post-handlers
+                   '((radian--smartparens-indent-new-pair "RET")
+                     (radian--smartparens-indent-new-pair "<return>"))))
+
+  (radian--smartparens-pair-setup #'prog-mode "(")
+  (radian--smartparens-pair-setup #'prog-mode "[")
+  (radian--smartparens-pair-setup #'prog-mode "{")
+  (radian--smartparens-pair-setup #'python-mode "\"\"\"")
+  (radian--smartparens-pair-setup #'latex-mode "\\[")
+  (radian--smartparens-pair-setup #'markdown-mode "```")
+
+  ;; It's unclear to me why any of this is needed.
+  (radian--smartparens-pair-setup #'json-mode "[")
+  (radian--smartparens-pair-setup #'json-mode "{")
+  (radian--smartparens-pair-setup #'tex-mode "{")
+
+  ;; Deal with `protobuf-mode' not using `define-minor-mode'.
+  (radian--smartparens-pair-setup #'protobuf-mode "{")
+
+  ;; Work around https://github.com/Fuco1/smartparens/issues/783.
+  (setq sp-escape-quotes-after-insert nil)
+
+  ;; Quiet some silly messages.
+  (dolist (key '(:unmatched-expression :no-matching-tag))
+    (setf (cdr (assq key sp-message-alist)) nil))
+
+  :blackout t)
 
 ;;;; Code reformatting
 
@@ -917,3 +1104,508 @@ order."
 
   (add-to-list 'safe-local-variable-values
                '(lisp-indent-function . common-lisp-indent-function)))
+
+;;;; Version control
+
+;; Feature `vc-hooks' provides hooks for the Emacs VC package. We
+;; don't use VC, because Magit is superior in pretty much every way.
+(use-feature vc-hooks
+  :config
+
+  ;; Disable VC. This improves performance and disables some annoying
+  ;; warning messages and prompts, especially regarding symlinks. See
+  ;; https://stackoverflow.com/a/6190338/3538165.
+  (setq vc-handled-backends nil))
+
+;; Feature `smerge-mode' provides an interactive mode for visualizing
+;; and resolving Git merge conflicts.
+(use-feature smerge-mode
+  :blackout t)
+
+;; Package `with-editor' provides infrastructure for using Emacs as an
+;; external editor for programs like Git. It is used by Magit.
+(use-package with-editor
+  :config/el-patch
+
+  ;; Make sure that `with-editor' always starts a server with a
+  ;; nonstandard name, instead of using the default one, so that
+  ;; emacsclient from a tty never picks it up (which messes up the
+  ;; color theme).
+  (defun with-editor--setup ()
+    (if (or (not with-editor-emacsclient-executable)
+            (file-remote-p default-directory))
+        (push (concat with-editor--envvar "=" with-editor-sleeping-editor)
+              process-environment)
+      ;; Make sure server-use-tcp's value is valid.
+      (unless (featurep 'make-network-process '(:family local))
+        (setq server-use-tcp t))
+      ;; Make sure the server is running.
+      (unless (process-live-p server-process)
+        (el-patch-splice 2
+          (when (server-running-p server-name)
+            (setq server-name (format "server%s" (emacs-pid)))
+            (when (server-running-p server-name)
+              (server-force-delete server-name))))
+        (server-start))
+      ;; Tell $EDITOR to use the Emacsclient.
+      (push (concat with-editor--envvar "="
+                    (shell-quote-argument with-editor-emacsclient-executable)
+                    ;; Tell the process where the server file is.
+                    (and (not server-use-tcp)
+                         (concat " --socket-name="
+                                 (shell-quote-argument
+                                  (expand-file-name server-name
+                                                    server-socket-dir)))))
+            process-environment)
+      (when server-use-tcp
+        (push (concat "EMACS_SERVER_FILE="
+                      (expand-file-name server-name server-auth-dir))
+              process-environment))
+      ;; As last resort fallback to the sleeping editor.
+      (push (concat "ALTERNATE_EDITOR=" with-editor-sleeping-editor)
+            process-environment))))
+
+;; Package `transient' is the interface used by Magit to display
+;; popups.
+(use-package transient
+  :config
+
+  ;; Allow using `q' to quit out of popups, in addition to `C-g'. See
+  ;; <https://magit.vc/manual/transient.html#Why-does-q-not-quit-popups-anymore_003f>
+  ;; for discussion.
+  (transient-bind-q-to-quit))
+
+;; Package `magit' provides a full graphical interface for Git within
+;; Emacs.
+(use-package magit
+  :bind (;; This is the primary entry point for Magit. Binding to C-x
+         ;; g is recommended in the manual:
+         ;; https://magit.vc/manual/magit.html#Getting-Started
+         ("C-x g" . #'magit-status)
+         ;; Alternate transient entry point; binding recommended in
+         ;; <https://magit.vc/manual/magit.html#Transient-Commands>.
+         ("C-x M-g" . #'magit-dispatch)
+         ;; Completing the trio of bindings in `magit-file-mode-map'.
+         ("C-c M-g" . #'magit-file-dispatch))
+
+  :init
+
+  ;; Suppress the message we get about "Turning on
+  ;; magit-auto-revert-mode" when loading Magit.
+  (setq magit-no-message '("Turning on magit-auto-revert-mode..."))
+
+  :config/el-patch
+
+  ;; Prevent Emacs asking if we're sure we want to exit, if a
+  ;; Magit-spawned git-credential-cache process is running.
+  (defun magit-maybe-start-credential-cache-daemon ()
+    "Maybe start a `git-credential-cache--daemon' process.
+If such a process is already running or if the value of option
+`magit-credential-cache-daemon-socket' is nil, then do nothing.
+Otherwise start the process passing the value of that options
+as argument."
+    (unless (or (not magit-credential-cache-daemon-socket)
+                (process-live-p magit-credential-cache-daemon-process)
+                (memq magit-credential-cache-daemon-process
+                      (list-system-processes)))
+      (setq magit-credential-cache-daemon-process
+            (or (--first (let* ((attr (process-attributes it))
+                                (comm (cdr (assq 'comm attr)))
+                                (user (cdr (assq 'user attr))))
+                           (and (string= comm "git-credential-cache--daemon")
+                                (string= user user-login-name)))
+                         (list-system-processes))
+                (condition-case nil
+                    (el-patch-wrap 2
+                      (with-current-buffer
+                          (get-buffer-create " *git-credential-cache--daemon*")
+                        (start-process "git-credential-cache--daemon"
+                                       (el-patch-swap
+                                         " *git-credential-cache--daemon*"
+                                         (current-buffer))
+                                       magit-git-executable
+                                       "credential-cache--daemon"
+                                       magit-credential-cache-daemon-socket)
+                        (el-patch-add
+                          (set-process-query-on-exit-flag
+                           (get-buffer-process (current-buffer)) nil))))
+                  ;; Some Git implementations (e.g. Windows) won't have
+                  ;; this program; if we fail the first time, stop trying.
+                  ((debug error)
+                   (remove-hook
+                    'magit-credential-hook
+                    #'magit-maybe-start-credential-cache-daemon)))))))
+
+  :config
+
+  ;; The default location for git-credential-cache is in
+  ;; ~/.config/git/credential. However, if ~/.git-credential-cache/
+  ;; exists, then it is used instead. Magit seems to be hardcoded to
+  ;; use the latter, so here we override it to have more correct
+  ;; behavior.
+  (unless (file-exists-p "~/.git-credential-cache/")
+    (let* ((xdg-config-home (or (getenv "XDG_CONFIG_HOME")
+                                (expand-file-name "~/.config/")))
+           (socket (expand-file-name "git/credential/socket" xdg-config-home)))
+      (setq magit-credential-cache-daemon-socket socket)))
+
+  ;; Don't try to save unsaved buffers when using Magit. We know
+  ;; perfectly well that we need to save our buffers if we want Magit
+  ;; to see them.
+  (setq magit-save-repository-buffers nil)
+
+  (transient-append-suffix
+    'magit-merge "-n"
+    '("-u" "Allow unrelated" "--allow-unrelated-histories"))
+
+  (transient-append-suffix 'magit-pull "-r"
+    '("-a" "Autostash" "--autostash"))
+
+  (transient-append-suffix 'magit-fetch "-t"
+    '("-u" "Unshallow" "--unshallow")))
+
+;; Feature `magit-diff' from package `magit' handles all the stuff
+;; related to interactive Git diffs.
+(use-feature magit-diff
+  :config
+
+  (radian-defadvice radian--magit-diff-revert-before-smerge (buf _pos)
+    :before #'magit-diff-visit-file--setup
+    "Before calling `smerge-start-session', try to revert buffer.
+This is necessary because it's possible that the file being
+visited has changed on disk (due to merge conflict, for example)
+but it was already visited, and hasn't been autoreverted yet
+(because it hasn't been visible in a window, for example). But
+`smerge-start-session', which is called by Magit while jumping
+you to the file, will not wait for an autorevert. It will just
+see that there aren't any conflict markers in the file and
+disable itself. Sad."
+    (with-current-buffer buf
+      (auto-revert-handler))))
+
+;; Feature `git-commit' from package `magit' provides the commit
+;; message editing capabilities of Magit.
+(use-feature git-commit
+  :config
+
+  ;; Max length for commit message summary is 50 characters as per
+  ;; https://chris.beams.io/posts/git-commit/.
+  (setq git-commit-summary-max-length 50))
+
+;; Package `emacsql-sqlite' is a dependency of Forge which is used to
+;; interact with the SQLite database that Forge uses to keep track of
+;; information about pull requests.
+(use-feature emacsql-sqlite
+  :init
+
+  ;; Put the EmacSQL binary in the repository, not the build dir. That
+  ;; way we don't have to recompile it every time packages get rebuilt
+  ;; by straight.el. See
+  ;; <https://github.com/raxod502/straight.el/issues/274> for not
+  ;; having to use the internal function `straight--dir'.
+  (setq emacsql-sqlite-data-root (straight--repos-dir "emacsql"))
+
+  :config
+
+  (radian-defadvice radian--advice-emacsql-no-compile-during-compile
+      (&rest _)
+    :before-until #'emacsql-sqlite-ensure-binary
+    "Prevent EmacSQL from trying to compile stuff during byte-compilation.
+This is a problem because Forge tries to get EmacSQL to compile
+its binary at load time, which is bad (you should never do
+anything significant at package load time) since it breaks CI."
+    byte-compile-current-file))
+
+;; Package `forge' provides a GitHub/GitLab/etc. interface directly
+;; within Magit.
+(use-package forge)
+
+;; Feature `forge-core' from package `forge' implements the core
+;; functionality.
+(use-feature forge-core
+  :config
+
+  (radian-defadvice radian--forge-get-repository-lazily (&rest _)
+    :before-while #'forge-get-repository
+    "Make `forge-get-repository' return nil if the binary isn't built yet.
+This prevents having EmacSQL try to build its binary (which may
+be annoying, inconvenient, or impossible depending on the
+situation) just because you tried to do literally anything with
+Magit."
+    (file-executable-p emacsql-sqlite-executable))
+
+  (radian-defadvice radian--forge-build-binary-lazily (&rest _)
+    :before #'forge-dispatch
+    "Make `forge-dispatch' build the binary if necessary.
+Normally, the binary gets built as soon as Forge is loaded, which
+is terrible UX. We disable that above, so we now have to manually
+make sure it does get built when we actually issue a Forge
+command."
+    (unless (file-executable-p emacsql-sqlite-executable)
+      (emacsql-sqlite-compile 2))))
+
+;; Package `git-gutter' adds a column to the left-hand side of each
+;; window, showing which lines have been added, removed, or modified
+;; since the last Git commit.
+(use-package git-gutter
+  :commands (git-gutter:previous-hunk
+             git-gutter:next-hunk
+             radian-git-gutter:beginning-of-hunk
+             git-gutter:end-of-hunk
+             git-gutter:revert-hunk)
+  :init
+
+  (radian-bind-key "v p" #'git-gutter:previous-hunk)
+  (radian-bind-key "v n" #'git-gutter:next-hunk)
+  (radian-bind-key "v a" #'radian-git-gutter:beginning-of-hunk)
+  (radian-bind-key "v e" #'git-gutter:end-of-hunk)
+  (radian-bind-key "v k" #'git-gutter:revert-hunk)
+
+  ;; Disable in Org mode, as per
+  ;; <https://github.com/syl20bnr/spacemacs/issues/10555> and
+  ;; <https://github.com/syohex/emacs-git-gutter/issues/24>.
+  ;; Apparently, the mode-enabling function for global minor modes
+  ;; gets called for new buffers while they are still in
+  ;; `fundamental-mode', before a major mode has been assigned. I
+  ;; don't know why this is the case, but adding `fundamental-mode'
+  ;; here fixes the issue.
+  (setq git-gutter:disabled-modes '(fundamental-mode org-mode))
+
+  (radian-defhook radian--git-gutter-load ()
+    find-file-hook
+    "Load `git-gutter' when initially finding a file."
+    (require 'git-gutter)
+    (remove-hook 'find-file-hook #'radian--git-gutter-load))
+
+  :config
+
+  ;; Don't prompt when reverting hunk.
+  (setq git-gutter:ask-p nil)
+
+  (global-git-gutter-mode +1)
+
+  (defun radian-git-gutter:beginning-of-hunk ()
+    "Move to beginning of current diff hunk."
+    (interactive)
+    (git-gutter:awhen (git-gutter:search-here-diffinfo git-gutter:diffinfos)
+      (let ((lines (- (git-gutter-hunk-start-line it) (line-number-at-pos))))
+        ;; This will move backwards since lines will be negative.
+        (forward-line lines))))
+
+  ;; Shuffle around all the hooks. `git-gutter' puts itself on a bunch
+  ;; of different things, but not exactly the right things. Remove all
+  ;; its meddling, and then do the right thing (run on window or
+  ;; buffer switch after a top-level command, after a buffer revert,
+  ;; and after Apheleia runs).
+
+  (remove-hook 'post-command-hook #'git-gutter:post-command-hook)
+  (ad-deactivate #'quit-window)
+  (ad-deactivate #'switch-to-buffer)
+
+  (defvar radian--git-gutter-last-buffer-and-window nil
+    "Cons of current buffer and selected window before last command.
+This is used to detect when the current buffer or selected window
+changes, which means that `git-gutter' needs to be re-run.")
+
+  (radian-defhook radian--git-gutter-on-buffer-or-window-change ()
+    post-command-hook
+    "Update `git-gutter' when current buffer or selected window changes."
+    (let ((new (cons (current-buffer) (selected-window))))
+      (unless (equal new radian--git-gutter-last-buffer-and-window)
+        (setq radian--git-gutter-last-buffer-and-window new)
+        ;; Sometimes the current buffer has not gotten updated yet
+        ;; after switching window, for example after `quit-window'.
+        (with-current-buffer (window-buffer)
+          (when git-gutter-mode
+            (when buffer-file-name
+              (unless (file-remote-p buffer-file-name)
+                (git-gutter))))))))
+
+  (use-feature autorevert
+    :config
+
+    (radian-defhook radian--git-gutter-after-autorevert ()
+      after-revert-hook
+      "Update `git-gutter' after the buffer is autoreverted."
+      (when git-gutter-mode
+        (git-gutter))))
+
+  (use-feature apheleia
+    :config
+
+    (radian-defhook radian--git-gutter-after-apheleia ()
+      apheleia-post-format-hook
+      "Update `git-gutter' after Apheleia formats the buffer."
+      (when git-gutter-mode
+        (git-gutter))))
+
+  :blackout git-gutter-mode)
+
+;; Package `git-gutter-fringe' integrates with `git-gutter' to make
+;; the gutter display use the window fringe rather than a column of
+;; text.
+;;
+;; Note that we only even put the package on the load path if
+;; `git-gutter-fringe' fringe is defined. The function might not be
+;; defined if Emacs was not built with X/Cocoa support, and if that's
+;; the case, then loading it will cause errors (and besides that, will
+;; break `git-gutter' since the fringe stuff is not available).
+;; However, we do need to load the package in order to byte-compile
+;; this configuration. That's okay since it's only done in a
+;; subprocess (so it won't break `git-gutter') but we still need to
+;; fix the errors in that case. Hence the `eval-when-compile'.
+(straight-register-package 'git-gutter-fringe)
+(when (fboundp 'define-fringe-bitmap)
+  (eval-when-compile
+    (unless (fboundp 'define-fringe-bitmap)
+      (fset 'define-fringe-bitmap #'ignore))
+    (unless (boundp 'overflow-newline-into-fringe)
+      (setq overflow-newline-into-fringe t)))
+  (use-package git-gutter-fringe
+    :demand t
+    :after git-gutter
+    :init
+
+    (use-feature git-gutter
+      :config
+
+      ;; This function is only available when Emacs is built with
+      ;; X/Cocoa support, see e.g.
+      ;; <https://github.com/pft/mingus/issues/5>. If we try to
+      ;; load/configure `git-gutter-fringe' without it, we run into
+      ;; trouble.
+      (when (fboundp 'define-fringe-bitmap)
+        (require 'git-gutter-fringe)))
+
+    :config
+
+    (fringe-helper-define 'radian--git-gutter-blank nil
+      "........"
+      "........"
+      "........"
+      "........"
+      "........"
+      "........"
+      "........"
+      "........")
+
+    (radian-defadvice radian--advice-git-gutter-remove-bitmaps
+        (func &rest args)
+      :around #'git-gutter-fr:view-diff-infos
+      "Disable the cutesy bitmap pluses and minuses from `git-gutter-fringe'.
+Instead, display simply a flat colored region in the fringe."
+      (radian-flet ((defun fringe-helper-insert-region
+                        (beg end _bitmap &rest args)
+                      (apply fringe-helper-insert-region
+                             beg end 'radian--git-gutter-blank args)))
+        (apply func args)))))
+
+;;;; External commands
+
+;; Feature `compile' provides a way to run a shell command from Emacs
+;; and view the output in real time, with errors and warnings
+;; highlighted and hyperlinked.
+(use-feature compile
+  :init
+
+  (radian-bind-key "m" #'compile)
+
+  :config
+
+  ;; By default, run from root of current Git repository.
+  (setq compile-command "git exec make ")
+
+  ;; Automatically scroll the Compilation buffer as output appears,
+  ;; but stop at the first error.
+  (setq compilation-scroll-output 'first-error)
+
+  ;; Don't ask about saving buffers when invoking `compile'. Try to
+  ;; save them all immediately using `save-some-buffers'.
+  (setq compilation-ask-about-save nil)
+
+  ;; Actually, don't bother saving buffers at all. That's dumb. We
+  ;; know to save our buffers if we want them to be updated on disk.
+  (setq compilation-save-buffers-predicate
+        (lambda ()))
+
+  (radian-defadvice radian--advice-compile-pop-to-buffer (buf)
+    :filter-return #'compilation-start
+    "Pop to compilation buffer on \\[compile]."
+    (prog1 buf
+      (when-let ((win (get-buffer-window buf)))
+        (select-window win)))))
+
+;; C++ Formatting
+(defconst monkey-big-fun-c-style
+  '((c-electric-pound-behavior   . nil)
+    (c-tab-always-indent         . t)
+    (c-comment-only-line-offset  . 0)
+    (c-hanging-braces-alist      . ((class-open)
+                                    (class-close)
+                                    (defun-open)
+                                    (defun-close)
+                                    (inline-open)
+                                    (inline-close)
+                                    (brace-list-open)
+                                    (brace-list-close)
+                                    (brace-list-intro)
+                                    (brace-list-entry)
+                                    (block-open)
+                                    (block-close)
+                                    (substatement-open)
+                                    (statement-case-open)
+                                    (class-open)))
+    (c-hanging-colons-alist      . ((inher-intro)
+                                    (case-label)
+                                    (label)
+                                    (access-label)
+                                    (access-key)
+                                    (member-init-intro)))
+    (c-cleanup-list              . (scope-operator
+                                    list-close-comma
+                                    defun-close-semi))
+    (c-offsets-alist             . ((arglist-close         .  c-lineup-arglist)
+                                    (label                 . -4)
+                                    (access-label          . -4)
+                                    (substatement-open     .  0)
+                                    (statement-case-intro  .  4)
+                                    (statement-block-intro .  c-lineup-for)
+                                    (case-label            .  4)
+                                    (block-open            .  0)
+                                    (inline-open           .  0)
+                                    (topmost-intro-cont    .  0)
+                                    (knr-argdecl-intro     . -4)
+                                    (brace-list-open       .  0)
+                                    (brace-list-intro      .  4)))
+    (c-echo-syntactic-information-p . t))
+  "Monkey's Big Fun C++ Style")
+
+(defun monkey-big-fun-c-hook ()
+  (c-add-style "BigFun" monkey-big-fun-c-style t)
+
+  ;; 4-space tabs
+  (setq tab-width 4
+        indent-tabs-mode nil)
+
+  ;; Additional style stuff
+  (c-set-offset 'member-init-intro '++)
+
+  ;; No hungry backspace
+  (c-toggle-auto-hungry-state -1)
+
+  ;; Newline indents, semi-colon doesn't
+  (setq c-hanging-semi&comma-criteria '((lambda () 'stop)))
+
+  ;; Handle super-tabbify (TAB completes, shift-TAB actually tabs)
+  (setq dabbrev-case-replace t)
+  (setq dabbrev-case-fold-search t)
+  (setq dabbrev-upcase-means-case-search t)
+
+  ;; Abbrevation expansion
+  (abbrev-mode 1))
+
+(add-hook 'c-mode-common-hook 'monkey-big-fun-c-hook)
+
+;; Appearance
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
