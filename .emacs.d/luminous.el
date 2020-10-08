@@ -567,6 +567,20 @@ This keymap is bound under \\[luminous-keymap].")
 
 (bind-key* "M-P" luminous-keymap)
 
+;; Personal Information
+(setq user-full-name "Mike Aldred"
+      user-mail-address "mike.aldred@luminousmonkey.org")
+
+;; Defaults I consider to be sane for basic operation.
+;; enable y/n answers
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(bind-key* "C-x C-m" #'execute-extended-command)
+(bind-key* "C-w" #'backward-kill-word)
+(bind-key* "C-x C-k" #'kill-region)
+(bind-key* "C-c C-k" #'kill-region)
+
+
 (defmacro luminous-bind-key (key-name command &optional predicate)
   "Bind a key in `luminous-keymap'.
 KEY-NAME, COMMAND, and PREDICATE are as in `bind-key'."
@@ -2119,12 +2133,34 @@ was printed, and only have ElDoc display if one wasn't."
   ;; then overriding the indentation (which is set to 8 spaces by
   ;; default). This style is only used for languages which do not have
   ;; a more specific style set in `c-default-style'.
-  (c-add-style "luminous-bsd"
-               '("bsd"
-                 (c-basic-offset . 2)))
-  (setf (map-elt c-default-style 'other) "luminous-bsd")
+  )
 
-  (put 'c-default-style 'safe-local-variable #'stringp))
+;; Google C style
+(use-package google-c-style
+  :ensure t)
+
+;; CCLS for running LSP for C
+(use-package ccls
+  :defer t
+  :hook ((c-mode c++-mode objc-mode) .
+         (lambda () (require 'ccls) (lsp)))
+  :custom
+  (ccls-executable (executable-find "ccls")) ; Add ccls to path if you haven't done so
+  (ccls-sem-highlight-method 'font-lock)
+  (ccls-enable-skipped-ranges nil)
+  :config
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-tramp-connection (cons ccls-executable ccls-args))
+    :major-modes '(c-mode c++-mode cuda-mode objc-mode)
+    :server-id 'ccls-remote
+    :multi-root nil
+    :remote? t
+    :notification-handlers
+    (lsp-ht ("$ccls/publishSkippedRanges" #'ccls--publish-skipped-ranges)
+            ("$ccls/publishSemanticHighlight" #'ccls--publish-semantic-highlight))
+    :initialization-options (lambda () ccls-initialization-options)
+    :library-folders-fn nil)))
 
 ;;;; Clojure
 ;; https://clojure.org/
@@ -3375,6 +3411,36 @@ Set this to nil if you wish to load a different color theme in
 your local configuration."
   :type 'boolean)
 
+;; Enable color theme as late as is humanly possible. This reduces
+;; frame flashing and other artifacts during startup.
+(when luminous-color-theme-enable
+  (use-package doom-themes
+    :no-require t
+    :custom
+    (doom-themes-enable-bold t)
+    (doom-themes-enable-italic t)
+    :config
+    (load-theme 'doom-molokai t)
+    (doom-themes-visual-bell-config)
+    (doom-themes-org-config)
+    (with-eval-after-load 'flycheck
+      (set-face-attribute 'flycheck-error nil
+                          :underline `(:color ,(doom-color 'error)
+                                              :style line))
+      (set-face-attribute 'flycheck-info nil
+                          :underline `(:color ,(doom-color
+                                                'highlight) :style line))
+      (set-face-attribute 'flycheck-info nil
+                          :underline `(:color ,(doom-color
+                                                'highlight) :style line))
+      (set-face-attribute 'flycheck-warning nil
+                          :underline `(:color ,(doom-color
+                                                'warning) :style line)))))
+
+;;;; Modeline
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode))
+
 ;;; Closing
 ;; Prune the build cache for straight.el; this will prevent it from
 ;; growing too large. Do this after the final hook to prevent packages
@@ -3394,37 +3460,10 @@ your local configuration."
  1 nil
  #'luminous-byte-compile)
 
-;; Enable color theme as late as is humanly possible. This reduces
-;; frame flashing and other artifacts during startup.
-(when luminous-color-theme-enable
-  (use-package doom-themes
-  :demand t
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :config
-  (load-theme 'doom-molokai t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config)
-  (with-eval-after-load 'flycheck
-    (set-face-attribute 'flycheck-error nil
-                        :underline `(:color ,(doom-color 'error)
-                                            :style line))
-    (set-face-attribute 'flycheck-info nil
-                        :underline `(:color ,(doom-color
-                                              'highlight) :style line))
-    (set-face-attribute 'flycheck-info nil
-                        :underline `(:color ,(doom-color
-                                              'highlight) :style line))
-    (set-face-attribute 'flycheck-warning nil
-                        :underline `(:color ,(doom-color
-                                              'warning) :style line))))
-)
-
-;;;; Modeline
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode))
+;; Make sure the theme is set
+(use-feature doom-themes
+  :functions (true-color-p)
+  :demand t)
 
 ;; Make adjustments to color theme that was selected by Luminous or
 ;; user. See <https://github.com/raxod502/luminous/issues/456>.
