@@ -3403,6 +3403,21 @@ turn it off again after creating the first frame."
     (add-to-list 'default-frame-alist '(ns-appearance . dark))
     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))))
 
+(luminous-defhook luminous--server-graphics-settings ()
+  server-after-make-frame-hook
+  "When using the Emacs daemon, some graphics settings are not
+set correctly because an actual graphical frame doesn't exist
+yet. This it just to try and get around that."
+  (when (display-graphic-p)
+    (tool-bar-mode -1)
+    (when luminous-font-size
+      (set-face-attribute 'default nil :height luminous-font-size))
+    (when luminous-font
+      (add-to-list 'default-frame-alist `(font . ,luminous-font)))
+    (set-face-attribute 'fixed-pitch nil :family 'unspecified)
+    (setq doom-modeline-icon t)
+    ))
+
 ;;;; Color theme
 
 (defcustom luminous-color-theme-enable t
